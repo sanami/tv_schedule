@@ -25,6 +25,8 @@ defmodule TvScheduleTest do
     IO.inspect res
 
     %{name: name, time: time} = res
+    assert time.hour == 18
+    assert time.minute == 30
     assert name == "name1"
   end
 
@@ -33,6 +35,8 @@ defmodule TvScheduleTest do
 
     res = parse_channel(html1) |> filter_items
     IO.inspect res
+
+    assert length(res) == 2
   end
 
 #  test "run", do: TvSchedule.run

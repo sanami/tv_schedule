@@ -1,6 +1,6 @@
 defmodule TvSchedule do
   @host URI.parse("https://tv.mail.ru")
-  @ignore_names ["Әзіл студио", "31 Әзіл"]
+  @ignore_names ["Әзіл студио", "31 Әзіл", "Әйел дәрігері", "Екі езу", "Бір болайық"]
 
   def get_channel(channel) do
     url = URI.merge(@host, "/astana/channel/#{channel}/")
@@ -56,6 +56,13 @@ defmodule TvSchedule do
     end)
   end
 
+  def print_schedule(items) do
+    Enum.each items, fn item ->
+      time = DateTime.to_time(item.time) |> Time.to_string |> String.slice(0..4)
+      IO.puts "#{time} #{item.name}"
+    end
+  end
+
   def run do
     for channel <- [1644, 1606, 1502] do
       IO.puts channel
@@ -63,7 +70,7 @@ defmodule TvSchedule do
       get_channel(channel)
       |> parse_channel
       |> filter_items
-      |> IO.inspect
+      |> print_schedule
     end
 
     :ok
