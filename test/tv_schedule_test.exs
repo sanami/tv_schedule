@@ -32,11 +32,9 @@ defmodule TvScheduleTest do
   end
 
   test "filter_items" do
-    res = parse_channel(@html1)
-    res = filter_items(res.items)
-    IO.inspect res
-
-    assert length(res) == 2
+    channel = parse_channel(@html1)
+    assert length(filter_items(channel.items, by_time: true)) == 2
+    assert length(filter_items(channel.items, by_time: false)) == 7
   end
 
   test "print_schedule" do

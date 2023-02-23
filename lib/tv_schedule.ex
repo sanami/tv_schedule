@@ -54,16 +54,17 @@ defmodule TvSchedule do
     %{name: name, items: items}
   end
 
-  def filter_items(items) do
+  def filter_items(items, by_time: by_time) do
     Enum.filter(items, fn item ->
-      ((item.time.hour in 19..23) || (item.time.hour in 0..2)) && item.duration > 77 && !(item.name in @ignore_names)
+      (!by_time || ((item.time.hour in 19..23) || (item.time.hour in 0..2))) &&
+      item.duration > 77 && !(item.name in @ignore_names)
     end)
   end
 
   def print_schedule(schedule) do
-    IO.puts "----- #{schedule.name}"
+    IO.puts "\n#{schedule.name}"
 
-    items = filter_items(schedule.items)
+    items = filter_items(schedule.items, by_time: false)
 
     Enum.each items, fn item ->
       time = DateTime.to_time(item.time) |> Time.to_string |> String.slice(0..4)
