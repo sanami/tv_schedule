@@ -30,7 +30,9 @@ defmodule TvSchedule do
   def parse_channel(html, today \\ DateTime.utc_now) do
     {:ok, doc} = Floki.parse_document(html)
 
-    Floki.find(doc, ".p-programms__item > .p-programms__item__inner")
+    name = Floki.find(doc, ".p-channels__item__info__title") |> Floki.text
+
+    items = Floki.find(doc, ".p-programms__item > .p-programms__item__inner")
     |> Enum.map(fn (item_el) ->
         time = Floki.find(item_el, ".p-programms__item__time-value") |> Floki.text
         name = Floki.find(item_el, ".p-programms__item__name-link") |> Floki.text
@@ -48,6 +50,8 @@ defmodule TvSchedule do
 
           Map.put(item, :duration, duration)
       end)
+
+    %{name: name, items: items}
   end
 
   def filter_items(items) do
@@ -56,7 +60,11 @@ defmodule TvSchedule do
     end)
   end
 
-  def print_schedule(items) do
+  def print_schedule(schedule) do
+    IO.puts "----- #{schedule.name}"
+
+    items = filter_items(schedule.items)
+
     Enum.each items, fn item ->
       time = DateTime.to_time(item.time) |> Time.to_string |> String.slice(0..4)
       IO.puts "#{time} #{item.name}"
@@ -65,11 +73,8 @@ defmodule TvSchedule do
 
   def run do
     for channel <- [1644, 1606, 1502] do
-      IO.puts channel
-
       get_channel(channel)
       |> parse_channel
-      |> filter_items
       |> print_schedule
     end
 

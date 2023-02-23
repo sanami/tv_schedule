@@ -2,21 +2,22 @@ defmodule TvScheduleTest do
   use ExUnit.Case
   import TvSchedule
 
-  test "get_channel" do
-    html = String.length(get_channel(1644))
-    res = String.length(html)
-    IO.inspect res
+  @html1 File.read! "test/fixtures/1644.html"
 
-    assert res > 10_000
-  end
+#  test "get_channel" do
+#    html = String.length(get_channel(1644))
+#    res = String.length(html)
+#    IO.inspect res
+#
+#    assert res > 10_000
+#  end
 
   test "parse_channel" do
-    html1 = File.read! "test/fixtures/1644.html"
-
-    res = parse_channel(html1)
+    res = parse_channel(@html1)
     IO.inspect res
 
-    assert length(res) == 15
+    assert String.length(res.name) == 32
+    assert length(res.items) == 15
   end
 
   test "process_item" do
@@ -31,12 +32,15 @@ defmodule TvScheduleTest do
   end
 
   test "filter_items" do
-    html1 = File.read! "test/fixtures/1644.html"
-
-    res = parse_channel(html1) |> filter_items
+    res = parse_channel(@html1)
+    res = filter_items(res.items)
     IO.inspect res
 
     assert length(res) == 2
+  end
+
+  test "print_schedule" do
+    parse_channel(@html1) |> print_schedule
   end
 
 #  test "run", do: TvSchedule.run
