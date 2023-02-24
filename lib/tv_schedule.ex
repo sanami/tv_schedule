@@ -1,6 +1,6 @@
 defmodule TvSchedule do
   @host URI.parse("https://tv.mail.ru")
-  @ignore_names ["Әзіл студио", "31 Әзіл", "Әйел дәрігері", "Екі езу", "Бір болайық"]
+  @ignore_names ["Әзіл студио", "31 Әзіл", "Әйел дәрігері", "Екі езу", "Бір болайық", "Әулеттер тартысы"]
 
   def get_channel(channel) do
     url = URI.merge(@host, "/astana/channel/#{channel}/")
@@ -13,18 +13,19 @@ defmodule TvSchedule do
   end
 
   def process_item(time, name, today) do
-    time = Time.from_iso8601!("#{time}:00")
-    time_attrs = time |> Map.from_struct |> Map.delete(:calendar)
+    [hour, minute] = String.split(time, ":")
+    {hour, _} = Integer.parse(hour)
+    {minute, _} = Integer.parse(minute)
 
-    date_time = Map.merge(today, time_attrs)
-    date_time = if time.hour < 5 do
+    date_time = Map.merge(today, %{hour: hour, minute: minute, second: 0, microsecond: {0, 0}})
 
+    date_time = if hour < 5 do
       DateTime.add(date_time, 60*60*24, :second) #TODO :day
     else
       date_time
     end
 
-    %{ time: date_time, name: name }
+    %{time: date_time, name: name}
   end
 
   def parse_channel(html, today \\ DateTime.utc_now) do
