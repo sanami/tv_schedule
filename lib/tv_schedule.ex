@@ -102,7 +102,7 @@ defmodule TvSchedule do
     end)
   end
 
-  def print_schedule(schedule) do
+  def print_schedule(schedule, show_details \\ false) do
     IO.puts "\n#{schedule.name} #{schedule.channel}"
 
     items = filter_items(schedule.items, ignore_names: load_ignore_names(), by_time: true, min_duration: 45)
@@ -112,7 +112,15 @@ defmodule TvSchedule do
       dur_hour = div(item.duration, 60) |> to_string |> String.pad_leading(2)
       dur_min = Integer.mod(item.duration, 60)|> to_string |> String.pad_leading(2, "0")
 
-      IO.puts "#{time} #{dur_hour}:#{dur_min} #{item.name} #{item.item_id}"
+      details = try do
+        if show_details do
+          data = get_item_details(item.item_id) |> parse_item_details
+          "#{data.year} #{data.country |> Enum.join(", ")}"
+        end
+      rescue _ -> nil
+      end
+
+      IO.puts "#{time} #{dur_hour}:#{dur_min} #{item.name} #{details} [#{item.item_id}]"
     end
 
     :ok
@@ -130,7 +138,7 @@ defmodule TvSchedule do
     for channel <- [1644, 1606, 1502, 717, 1455] do
       get_channel(channel)
       |> parse_channel
-      |> print_schedule
+      |> print_schedule(true)
     end
 
     :ok
