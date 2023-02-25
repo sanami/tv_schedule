@@ -18,6 +18,29 @@ defmodule TvSchedule do
     {channel, body}
   end
 
+  def get_item_details(item_id) do
+    url = URI.merge(@host, "/ajax/event/?id=#{item_id}")
+    %{status_code: 200, body: body} = HTTPoison.get! url
+    body
+  end
+
+  def parse_item_details(json_str) do
+    json = Jason.decode!(json_str, keys: :atoms)
+
+    info = %{
+      #participants: json.tv_event.participants,
+      country: json.tv_event.country |> Enum.map(&(&1.title)),
+      name: json.tv_event.name,
+      descr: json.tv_event.descr,
+      genre: json.tv_event.genre |> Enum.map(&(&1.title)),
+      imdb_rating: json.tv_event.afisha_event.imdb_rating,
+      name_eng: json.tv_event.afisha_event.name_eng,
+      year: json.tv_event.year.title,
+    }
+
+    info
+  end
+
   def process_item(time, name, today, channel \\ 0) do
     [hour, minute] = String.split(time, ":")
     {hour, _} = Integer.parse(hour)
@@ -82,8 +105,14 @@ defmodule TvSchedule do
       dur_hour = div(item.duration, 60) |> to_string |> String.pad_leading(2)
       dur_min = Integer.mod(item.duration, 60)|> to_string |> String.pad_leading(2, "0")
 
-      IO.puts "#{time} #{dur_hour}:#{dur_min} #{item.name}"
+      IO.puts "#{time} #{dur_hour}:#{dur_min} #{item.name} #{item.item_id}"
     end
+  end
+
+  def print_item(item_id) do
+    get_item_details(item_id)
+    |> parse_item_details
+    |> IO.inspect
   end
 
   def run do

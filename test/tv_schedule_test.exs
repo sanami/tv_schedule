@@ -3,6 +3,7 @@ defmodule TvScheduleTest do
   import TvSchedule
 
   @html1 File.read! "test/fixtures/1644.html"
+  @json1 File.read! "test/fixtures/203043290.json"
 
 #  test "get_channel" do
 #    html = String.length(get_channel(1644))
@@ -11,6 +12,17 @@ defmodule TvScheduleTest do
 #
 #    assert res > 10_000
 #  end
+
+  test "get_item_details" do
+    res = get_item_details("203043290")
+    assert String.length(res) > 10000
+  end
+
+  test "parse_item_details" do
+    res = parse_item_details(@json1)
+    IO.inspect res
+    assert is_map(res)
+  end
 
   test "parse_channel" do
     res = parse_channel({1644, @html1})
