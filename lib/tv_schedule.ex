@@ -36,13 +36,15 @@ defmodule TvSchedule do
 
     name = Floki.find(doc, ".p-channels__item__info__title") |> Floki.text
 
-    items = Floki.find(doc, ".p-programms__item > .p-programms__item__inner")
+    items = Floki.find(doc, ".p-programms__item")
     |> Enum.map(fn (item_el) ->
         time = Floki.find(item_el, ".p-programms__item__time-value") |> Floki.text
         name = Floki.find(item_el, ".p-programms__item__name-link") |> Floki.text
+        item_id = Floki.attribute(item_el, "data-id") |> hd
 
         if String.length(time) > 0 do
-          process_item(time, name, today, channel)
+          item = process_item(time, name, today, channel)
+          Map.merge(item, %{name: name, item_id: item_id})
         end
       end)
     |> Enum.filter(&is_map/1)
