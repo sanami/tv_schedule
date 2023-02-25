@@ -1,6 +1,6 @@
 defmodule TvSchedule do
   @host URI.parse("https://tv.mail.ru")
-  @ignore_names ["Әзіл студио", "31 Әзіл", "Әйел дәрігері", "Екі езу", "Бір болайық", "Әулеттер тартысы"]
+  @ignore_names ["Әзіл студио", "31 Әзіл", "Әйел дәрігері", "Екі езу", "Бір болайық", "Әулеттер тартысы", "Bizdin show", "What's Up?", "Taboo", "Jaidarman"]
 
   def get_channel(channel) do
     url = URI.merge(@host, "/astana/channel/#{channel}/")
@@ -9,7 +9,7 @@ defmodule TvSchedule do
     File.mkdir_p("tmp")
     File.write("tmp/#{channel}.html", body)
 
-    body
+    {channel, body}
   end
 
   def process_item(time, name, today) do
@@ -28,7 +28,7 @@ defmodule TvSchedule do
     %{time: date_time, name: name}
   end
 
-  def parse_channel(html, today \\ DateTime.utc_now) do
+  def parse_channel({channel, html}, today \\ DateTime.utc_now) do
     {:ok, doc} = Floki.parse_document(html)
 
     name = Floki.find(doc, ".p-channels__item__info__title") |> Floki.text
@@ -47,25 +47,24 @@ defmodule TvSchedule do
     |> Enum.map(fn
         [item] -> Map.put(item, :duration, 0)
         [item, next_item]->
-          duration = DateTime.diff(next_item.time, item.time, :second) / 60 #TODO :minute
-
+          duration = DateTime.diff(next_item.time, item.time, :second) |> div(60) #TODO :minute
           Map.put(item, :duration, duration)
       end)
 
-    %{name: name, items: items}
+    %{channel: channel, name: name, items: items}
   end
 
-  def filter_items(items, by_time: by_time) do
+  def filter_items(items, by_time: by_time, min_duration: min_duration) do
     Enum.filter(items, fn item ->
       (!by_time || ((item.time.hour in 19..23) || (item.time.hour in 0..2))) &&
-      item.duration > 77 && !(item.name in @ignore_names)
+      item.duration >= min_duration && !(item.name in @ignore_names)
     end)
   end
 
   def print_schedule(schedule) do
-    IO.puts "\n#{schedule.name}"
+    IO.puts "\n#{schedule.name} #{schedule.channel}"
 
-    items = filter_items(schedule.items, by_time: false)
+    items = filter_items(schedule.items, by_time: false, min_duration: 45)
 
     Enum.each items, fn item ->
       time = DateTime.to_time(item.time) |> Time.to_string |> String.slice(0..4)

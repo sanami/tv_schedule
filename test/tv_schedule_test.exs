@@ -6,14 +6,14 @@ defmodule TvScheduleTest do
 
 #  test "get_channel" do
 #    html = String.length(get_channel(1644))
-#    res = String.length(html)
+#    {1644, res} = String.length(html)
 #    IO.inspect res
 #
 #    assert res > 10_000
 #  end
 
   test "parse_channel" do
-    res = parse_channel(@html1)
+    res = parse_channel({1644, @html1})
     IO.inspect res
 
     assert String.length(res.name) == 32
@@ -32,13 +32,13 @@ defmodule TvScheduleTest do
   end
 
   test "filter_items" do
-    channel = parse_channel(@html1)
-    assert length(filter_items(channel.items, by_time: true)) == 2
-    assert length(filter_items(channel.items, by_time: false)) == 7
+    channel = parse_channel({1644, @html1})
+    assert length(filter_items(channel.items, by_time: true, min_duration: 90)) == 2
+    assert length(filter_items(channel.items, by_time: false, min_duration: 45)) == 10
   end
 
   test "print_schedule" do
-    parse_channel(@html1) |> print_schedule
+    parse_channel({1644, @html1}) |> print_schedule
   end
 
 #  test "run", do: TvSchedule.run
