@@ -1,0 +1,155 @@
+{
+  "layout": {
+    "mrc_title": "«Маска» — расписание на ТВ",
+    "utm_campaign": "tv_event",
+    "og": {
+      "type": "website",
+      "image": {
+        "width": 1200,
+        "src": "https://pic.kino.mail.ru/share/tv_event/203059401/?20230214165039.1",
+        "height": 630
+      }
+    },
+    "mrc_descr": "Программа передач"
+  },
+  "foreign_region": null,
+  "status": "OK",
+  "tv_event": {
+    "country": [
+      {
+        "title": "Украина"
+      }
+    ],
+    "age_restrict": 1,
+    "region_slug": "astana",
+    "name": "Маска",
+    "channel": {
+      "name": "Седьмой канал",
+      "player": null,
+      "pic_big": {
+        "source": {
+          "href": "",
+          "name": "",
+          "url": "",
+          "title": "",
+          "id": 1
+        },
+        "width": 128,
+        "height": 128,
+        "uuid": "d0843336-c372-5dd0-ba31-7d71183a2b05",
+        "key": "AQACEecLrCVy8J9VqVQl7k13RfRiqsLQUxQCPk1xwkAPkhxdfi_TlfTq7Y-2idXmCggFly3xV5Zk2UJc5J6faL6z7S0",
+        "params": {
+          "scale": 1,
+          "dpr": [
+            200
+          ]
+        },
+        "url": "https://resizer.mail.ru/p/d0843336-c372-5dd0-ba31-7d71183a2b05/AQACEecLrCVy8J9VqVQl7k13RfRiqsLQUxQCPk1xwkAPkhxdfi_TlfTq7Y-2idXmCggFly3xV5Zk2UJc5J6faL6z7S0.png",
+        "baseURL": "https://resizer.mail.ru/p/",
+        "title": "",
+        "fmt": [
+          "png"
+        ]
+      },
+      "pic_small": {
+        "source": {
+          "href": "",
+          "name": "",
+          "url": "",
+          "title": "",
+          "id": 1
+        },
+        "width": 32,
+        "height": 32,
+        "uuid": "d0843336-c372-5dd0-ba31-7d71183a2b05",
+        "key": "AQAC06myDjYWf5K8mOkC85srW0ByPbj2fbD4uRumihHuq-L73Ts3aK4ChOxZ-WKyEzYjBb6KqyN7F9JhXLWJApve_9k",
+        "params": {
+          "scale": 1,
+          "dpr": [
+            200
+          ]
+        },
+        "url": "https://resizer.mail.ru/p/d0843336-c372-5dd0-ba31-7d71183a2b05/AQAC06myDjYWf5K8mOkC85srW0ByPbj2fbD4uRumihHuq-L73Ts3aK4ChOxZ-WKyEzYjBb6KqyN7F9JhXLWJApve_9k.png",
+        "baseURL": "https://resizer.mail.ru/p/",
+        "title": "",
+        "fmt": [
+          "png",
+          "webp"
+        ]
+      },
+      "is_promo": 0,
+      "pic_url": "https://resizer.mail.ru/p/d0843336-c372-5dd0-ba31-7d71183a2b05/AQAC06myDjYWf5K8mOkC85srW0ByPbj2fbD4uRumihHuq-L73Ts3aK4ChOxZ-WKyEzYjBb6KqyN7F9JhXLWJApve_9k.png",
+      "pic_url_128": "https://resizer.mail.ru/p/d0843336-c372-5dd0-ba31-7d71183a2b05/AQACEecLrCVy8J9VqVQl7k13RfRiqsLQUxQCPk1xwkAPkhxdfi_TlfTq7Y-2idXmCggFly3xV5Zk2UJc5J6faL6z7S0.png",
+      "url": "/astana/channel/1606/",
+      "slug": "",
+      "id": 1606,
+      "pic_url_64": "https://resizer.mail.ru/p/d0843336-c372-5dd0-ba31-7d71183a2b05/dpr:200/AQAC06myDjYWf5K8mOkC85srW0ByPbj2fbD4uRumihHuq-L73Ts3aK4ChOxZ-WKyEzYjBb6KqyN7F9JhXLWJApve_9k.png"
+    },
+    "genre": [
+      {
+        "title": "музыка"
+      },
+      {
+        "title": "Тв-шоу"
+      }
+    ],
+    "near": [
+      {
+        "id": 203059462,
+        "start": {
+          "wdayname_short": "вс",
+          "mon_sh": "фев",
+          "tm": "12:00",
+          "mday": 26
+        }
+      }
+    ],
+    "api": {
+      "rate_add": {
+        "url": "https://kino.mail.ru/ext/adm/add/"
+      }
+    },
+    "descr": "",
+    "sm_image_url": "https://tv.mail.ru/tvpic/2/37/8973456.jpg",
+    "tv_gallery": {
+      "items": [
+        {
+          "original": {
+            "src": "https://tv.mail.ru/tvpic/2/37/8973456.jpg"
+          },
+          "preview": {
+            "src": "https://tv.mail.ru/tvpic/3/21/5300465.jpg"
+          }
+        }
+      ]
+    },
+    "url": "/astana/channel/1606/203059401/",
+    "id": "203059401",
+    "year": {
+      "title": "2021"
+    },
+    "start": {
+      "wdayname_short": "сб",
+      "mon_sh": "фев",
+      "onair": 1,
+      "tm": "21:00",
+      "mday": 25
+    }
+  },
+  "urls": {
+    "channel_index": "/astana/channel/",
+    "tvshow_online": "https://kino.mail.ru/tvshow/online/",
+    "cinema_online": "https://kino.mail.ru/cinema/online/",
+    "user_recommended": "https://kino.mail.ru/user/recommended/",
+    "main_page": "/almaty/",
+    "api": {
+      "ajax_recsys_selections_cinema": "/ajax/recsys/blocks/?name=selections_cinema",
+      "ajax_tv_channel_list": "/ajax/channel/list/",
+      "ajax_tvshow_online": "/ajax/tvshow/online/",
+      "ajax_recsys_selections_series": "/ajax/recsys/blocks/?name=selections_series",
+      "ajax_recsys_online_series": "/ajax/recsys/blocks/?name=online_series",
+      "ajax_recsys_online_cinema": "/ajax/recsys/blocks/?name=online_cinema"
+    },
+    "series_online": "https://kino.mail.ru/series/online/"
+  }
+}

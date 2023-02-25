@@ -1,9 +1,10 @@
 defmodule TvSchedule do
   @host URI.parse("https://tv.mail.ru")
+  @html_entity %{"&nbsp;" => " ", "&mdash;" => "-", "&laquo;" => "'", "&raquo;" => "'"}
 
   def load_ignore_names do
     case File.read "config/tv_ignore.txt" do
-      {:ok, text} -> String.split(text)
+      {:ok, text} -> String.split(text, "\n") |> Enum.filter(&(String.length(&1) > 0))
       _ -> []
     end
   end
@@ -19,9 +20,15 @@ defmodule TvSchedule do
   end
 
   def get_item_details(item_id) do
-    url = URI.merge(@host, "/ajax/event/?id=#{item_id}")
+    url = URI.merge(@host, "/ajax/event/?id=#{item_id}&region_id=378")
     %{status_code: 200, body: body} = HTTPoison.get! url
+
     body
+  end
+
+  def replace_html_entities(str) do
+    String.replace(str, ~r/&[^;]+;/, &(@html_entity[&1] || " ")) # &nbsp;
+    |> String.replace(~r/\<[^\>]+\>/, "") # <tag>
   end
 
   def parse_item_details(json_str) do
@@ -31,11 +38,11 @@ defmodule TvSchedule do
       #participants: json.tv_event.participants,
       country: json.tv_event.country |> Enum.map(&(&1.title)),
       name: json.tv_event.name,
-      descr: json.tv_event.descr,
+      descr: json.tv_event.descr |> replace_html_entities,
       genre: json.tv_event.genre |> Enum.map(&(&1.title)),
-      imdb_rating: json.tv_event.afisha_event.imdb_rating,
-      name_eng: json.tv_event.afisha_event.name_eng,
-      year: json.tv_event.year.title,
+      imdb_rating: json.tv_event |> get_in([:afisha_event, :imdb_rating]),
+      name_eng: json.tv_event |> get_in([:afisha_event, :name_eng]),
+      year: json.tv_event |> get_in([:year, :title])
     }
 
     info
@@ -107,12 +114,16 @@ defmodule TvSchedule do
 
       IO.puts "#{time} #{dur_hour}:#{dur_min} #{item.name} #{item.item_id}"
     end
+
+    :ok
   end
 
   def print_item(item_id) do
     get_item_details(item_id)
     |> parse_item_details
     |> IO.inspect
+
+    :ok
   end
 
   def run do
