@@ -12,7 +12,7 @@ defmodule TvSchedule do
     {channel, body}
   end
 
-  def process_item(time, name, today) do
+  def process_item(time, name, today, channel \\ 0) do
     [hour, minute] = String.split(time, ":")
     {hour, _} = Integer.parse(hour)
     {minute, _} = Integer.parse(minute)
@@ -24,6 +24,9 @@ defmodule TvSchedule do
     else
       date_time
     end
+
+    shift_min = if channel == 717, do: -120, else: 0
+    date_time = DateTime.add(date_time, shift_min*60, :second) #TODO :minute
 
     %{time: date_time, name: name}
   end
@@ -39,7 +42,7 @@ defmodule TvSchedule do
         name = Floki.find(item_el, ".p-programms__item__name-link") |> Floki.text
 
         if String.length(time) > 0 do
-          process_item(time, name, today)
+          process_item(time, name, today, channel)
         end
       end)
     |> Enum.filter(&is_map/1)

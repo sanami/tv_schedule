@@ -29,6 +29,10 @@ defmodule TvScheduleTest do
     assert time.hour == 18
     assert time.minute == 30
     assert name == "name1"
+
+    # shift
+    %{time: time} = process_item("18:30", "name1", today, 717)
+    assert time.hour == 16
   end
 
   test "filter_items" do
