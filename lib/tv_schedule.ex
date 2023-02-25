@@ -1,6 +1,6 @@
 defmodule TvSchedule do
   @host URI.parse("https://tv.mail.ru")
-  @ignore_names ["Әзіл студио", "31 Әзіл", "Әйел дәрігері", "Екі езу", "Бір болайық", "Әулеттер тартысы", "Bizdin show", "What's Up?", "Taboo", "Jaidarman"]
+  @ignore_names ["Әзіл студио", "31 Әзіл", "Әйел дәрігері", "Екі езу", "Бір болайық", "Әулеттер тартысы", "Bizdin show", "What's Up?", "Taboo", "Jaidarman", "Бүлдір-күлдір", "Жұлдызды Weekend", "Қуырдақ", "Тамаша live", "Маша и Медведь", "Мультфильмы"]
 
   def get_channel(channel) do
     url = URI.merge(@host, "/astana/channel/#{channel}/")
@@ -56,7 +56,7 @@ defmodule TvSchedule do
 
   def filter_items(items, by_time: by_time, min_duration: min_duration) do
     Enum.filter(items, fn item ->
-      (!by_time || ((item.time.hour in 19..23) || (item.time.hour in 0..2))) &&
+      (!by_time || ((item.time.hour in 18..23) || (item.time.hour in 0..2))) &&
       item.duration >= min_duration && !(item.name in @ignore_names)
     end)
   end
@@ -64,16 +64,19 @@ defmodule TvSchedule do
   def print_schedule(schedule) do
     IO.puts "\n#{schedule.name} #{schedule.channel}"
 
-    items = filter_items(schedule.items, by_time: false, min_duration: 45)
+    items = filter_items(schedule.items, by_time: true, min_duration: 45)
 
     Enum.each items, fn item ->
       time = DateTime.to_time(item.time) |> Time.to_string |> String.slice(0..4)
-      IO.puts "#{time} #{item.name}"
+      dur_hour = div(item.duration, 60) |> to_string |> String.pad_leading(2)
+      dur_min = Integer.mod(item.duration, 60)|> to_string |> String.pad_leading(2, "0")
+
+      IO.puts "#{time} #{dur_hour}:#{dur_min} #{item.name}"
     end
   end
 
   def run do
-    for channel <- [1644, 1606, 1502] do
+    for channel <- [1644, 1606, 1502, 717, 1455] do
       get_channel(channel)
       |> parse_channel
       |> print_schedule
