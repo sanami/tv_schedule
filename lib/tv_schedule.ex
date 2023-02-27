@@ -4,7 +4,7 @@ defmodule TvSchedule do
 
   def load_ignore_names do
     case File.read "config/tv_ignore.txt" do
-      {:ok, text} -> String.split(text, "\n") |> Enum.filter(&(String.length(&1) > 0))
+      {:ok, text} -> text |> String.split("\n") |> Enum.filter(&(String.length(&1) > 0))
       _ -> []
     end
   end
@@ -27,7 +27,8 @@ defmodule TvSchedule do
   end
 
   def replace_html_entities(str) do
-    String.replace(str, ~r/&[^;]+;/, &(@html_entity[&1] || " ")) # &nbsp;
+    str
+    |> String.replace(~r/&[^;]+;/, &(@html_entity[&1] || " ")) # &nbsp;
     |> String.replace(~r/\<[^\>]+\>/, "") # <tag>
   end
 
@@ -70,7 +71,7 @@ defmodule TvSchedule do
   def parse_channel({channel, html}, today \\ DateTime.utc_now) do
     {:ok, doc} = Floki.parse_document(html)
 
-    name = Floki.find(doc, ".p-channels__item__info__title") |> Floki.text
+    name = doc |> Floki.find(".p-channels__item__info__title") |> Floki.text
 
     items = Floki.find(doc, ".p-programms__item")
     |> Enum.map(fn (item_el) ->
@@ -108,14 +109,14 @@ defmodule TvSchedule do
     items = filter_items(schedule.items, ignore_names: load_ignore_names(), by_time: true, min_duration: 45)
 
     Enum.each items, fn item ->
-      time = DateTime.to_time(item.time) |> Time.to_string |> String.slice(0..4)
-      dur_hour = div(item.duration, 60) |> to_string |> String.pad_leading(2)
-      dur_min = Integer.mod(item.duration, 60)|> to_string |> String.pad_leading(2, "0")
+      time = item.time |> DateTime.to_time |> Time.to_string |> String.slice(0..4)
+      dur_hour = item.duration |> div(60) |> to_string |> String.pad_leading(2)
+      dur_min = item.duration |> Integer.mod(60)|> to_string |> String.pad_leading(2, "0")
 
       details = try do
         if show_details do
-          data = get_item_details(item.item_id) |> parse_item_details
-          "#{data.year} #{data.country |> Enum.join(", ")}"
+          data = item.item_id |> get_item_details |> parse_item_details
+          "#{data.year} #{Enum.join(data.country, ", ")} #{data.imdb_rating}"
         end
       rescue _ -> nil
       end
@@ -127,7 +128,8 @@ defmodule TvSchedule do
   end
 
   def print_item(item_id) do
-    get_item_details(item_id)
+    item_id
+    |> get_item_details
     |> parse_item_details
     |> IO.inspect
 
@@ -136,7 +138,8 @@ defmodule TvSchedule do
 
   def run do
     for channel <- [1644, 1606, 1502, 717, 1455] do
-      get_channel(channel)
+      channel
+      |> get_channel
       |> parse_channel
       |> print_schedule(true)
     end
