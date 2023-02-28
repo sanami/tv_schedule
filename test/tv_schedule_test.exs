@@ -60,8 +60,8 @@ defmodule TvScheduleTest do
 
   test "filter_items" do
     channel = parse_channel({1644, @html1})
-    assert length(filter_items(channel.items, ignore_names: [], by_time: true, min_duration: 90)) == 2
-    assert length(filter_items(channel.items, ignore_names: [], by_time: false, min_duration: 45)) > 2
+    assert length(filter_items(channel.items, by_time: true, min_duration: 90)) == 2
+    assert length(filter_items(channel.items, by_time: false)) > 2
   end
 
   test "load_ignore_names" do

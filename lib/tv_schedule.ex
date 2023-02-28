@@ -97,7 +97,11 @@ defmodule TvSchedule do
     %{channel: channel, name: name, items: items}
   end
 
-  def filter_items(items, ignore_names: ignore_names, by_time: by_time, min_duration: min_duration) do
+  def filter_items(items, options \\ []) do
+   ignore_names = Keyword.get(options, :ignore_names) || []
+   by_time = Keyword.get(options, :by_time)
+   min_duration = Keyword.get(options, :min_duration) || 0
+
     Enum.filter(items, fn item ->
       (!by_time || ((item.time.hour in 18..23) || (item.time.hour in 0..2))) &&
       item.duration >= min_duration && !(item.name in ignore_names)
