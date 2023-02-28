@@ -115,12 +115,12 @@ defmodule TvSchedule do
       details = try do
         if show_details do
           data = item.item_id |> get_item_details |> parse_item_details
-          "#{data.year} #{Enum.join(data.country, ", ")} #{data.imdb_rating}"
+          "#{data.year} #{Enum.join(data.country, ", ")} #{data.imdb_rating} #{String.slice(data.descr || "", 0, 80)}"
         end
       rescue _ -> nil
       end
 
-      IO.puts "#{time} #{dur_hour}:#{dur_min} #{item.name} #{details} [#{item.item_id}]"
+      IO.puts "#{time} #{dur_hour}:#{dur_min} #{item.name} [#{item.item_id}] #{details}"
     end
 
     :ok
