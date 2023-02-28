@@ -1,6 +1,5 @@
 defmodule TvSchedule do
   @host URI.parse("https://tv.mail.ru")
-  @html_entity %{"&nbsp;" => " ", "&mdash;" => "-", "&laquo;" => "'", "&raquo;" => "'"}
 
   def load_ignore_names do
     case File.read "config/tv_ignore.txt" do
@@ -28,8 +27,8 @@ defmodule TvSchedule do
 
   def replace_html_entities(str) do
     str
-    |> String.replace(~r/&[^;]+;/, &(@html_entity[&1] || " ")) # &nbsp;
     |> String.replace(~r/\<[^\>]+\>/, "") # <tag>
+    |> HtmlEntities.decode
   end
 
   def parse_item_details(json_str) do

@@ -39,6 +39,10 @@ defmodule TvScheduleTest do
     assert length(res.items) == 15
   end
 
+  test "replace_html_entities" do
+    assert replace_html_entities("<p>A&nbsp;B</p>") == <<?A, 194, 160, ?B>>
+  end
+
   test "process_item" do
     today = DateTime.utc_now
     res = process_item("18:30", "name1", today)
