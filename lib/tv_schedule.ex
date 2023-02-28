@@ -25,6 +25,8 @@ defmodule TvSchedule do
     body
   end
 
+  def replace_html_entities(nil), do: ""
+
   def replace_html_entities(str) do
     str
     |> String.replace(~r/\<[^\>]+\>/, "") # <tag>
@@ -36,10 +38,10 @@ defmodule TvSchedule do
 
     info = %{
       #participants: json.tv_event.participants,
-      country: json.tv_event.country |> Enum.map(&(&1.title)),
+      country: (json.tv_event[:country] || []) |> Enum.map(&(&1.title)),
       name: json.tv_event.name,
       descr: json.tv_event.descr |> replace_html_entities,
-      genre: json.tv_event.genre |> Enum.map(&(&1.title)),
+      genre: (json.tv_event[:genre] || []) |> Enum.map(&(&1.title)),
       imdb_rating: json.tv_event |> get_in([:afisha_event, :imdb_rating]),
       name_eng: json.tv_event |> get_in([:afisha_event, :name_eng]),
       year: json.tv_event |> get_in([:year, :title])
@@ -115,7 +117,7 @@ defmodule TvSchedule do
       details = try do
         if show_details do
           data = item.item_id |> get_item_details |> parse_item_details
-          "#{data.year} #{Enum.join(data.country, ", ")} #{data.imdb_rating} #{String.slice(data.descr || "", 0, 80)}"
+          "#{Enum.join(data.genre, ", ")} #{data.year} #{Enum.join(data.country, ", ")} #{data.imdb_rating} #{String.slice(data.descr || "", 0, 80)}"
         end
       rescue _ -> nil
       end
