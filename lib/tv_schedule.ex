@@ -3,7 +3,8 @@ defmodule TvSchedule do
 
   def load_ignore_names do
     case File.read "config/tv_ignore.txt" do
-      {:ok, text} -> text |> String.split("\n") |> Enum.filter(&(String.length(&1) > 0))
+      {:ok, text} ->
+        text |> String.split("\n") |> Enum.map(&String.trim/1) |> Enum.filter(&(String.length(&1) > 0))
       _ -> []
     end
   end
@@ -121,7 +122,7 @@ defmodule TvSchedule do
       details = try do
         if show_details do
           data = item.item_id |> get_item_details |> parse_item_details
-          "#{Enum.join(data.genre, ", ")} #{data.year} #{Enum.join(data.country, ", ")} #{data.imdb_rating} #{String.slice(data.descr || "", 0, 80)}"
+          "#{Enum.join(data.genre, ", ")} #{data.year} #{Enum.join(data.country, ", ")} #{data.imdb_rating} #{String.slice(data.descr || "", 0, 70)}"
         end
       rescue _ -> nil
       end
@@ -141,7 +142,7 @@ defmodule TvSchedule do
     :ok
   end
 
-  def run do
+  def run(_date_str \\ :today) do
     for channel <- [1644, 1606, 1502, 717, 1455] do
       channel
       |> get_channel
