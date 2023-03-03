@@ -1,0 +1,384 @@
+{
+  "status": "OK",
+  "current_ts": 1677840862,
+  "form": {
+    "channel_id": {
+      "disabled": 1,
+      "value": "1644"
+    },
+    "date": {
+      "value": "2023-03-03",
+      "values": [
+        {
+          "wdayname_short": "Ср",
+          "value": "2023-03-01",
+          "passed": 1,
+          "mon_sr": "марта",
+          "mday": 1
+        },
+        {
+          "wdayname_short": "Чт",
+          "value": "2023-03-02",
+          "passed": 1,
+          "mon_sr": "марта",
+          "yesterday": 1,
+          "mday": 2
+        },
+        {
+          "wdayname_short": "Пт",
+          "checked": 1,
+          "today": 1,
+          "value": "2023-03-03",
+          "mon_sr": "марта",
+          "mday": 3
+        },
+        {
+          "wdayname_short": "Сб",
+          "tomorrow": 1,
+          "value": "2023-03-04",
+          "mon_sr": "марта",
+          "mday": 4
+        },
+        {
+          "wdayname_short": "Вс",
+          "value": "2023-03-05",
+          "mon_sr": "марта",
+          "mday": 5
+        },
+        {
+          "wdayname_short": "Пн",
+          "value": "2023-03-06",
+          "mon_sr": "марта",
+          "mday": 6
+        },
+        {
+          "wdayname_short": "Вт",
+          "value": "2023-03-07",
+          "mon_sr": "марта",
+          "mday": 7
+        },
+        {
+          "wdayname_short": "Ср",
+          "value": "2023-03-08",
+          "mon_sr": "марта",
+          "mday": 8
+        },
+        {
+          "wdayname_short": "Чт",
+          "value": "2023-03-09",
+          "mon_sr": "марта",
+          "mday": 9
+        },
+        {
+          "wdayname_short": "Пт",
+          "value": "2023-03-10",
+          "mon_sr": "марта",
+          "mday": 10
+        },
+        {
+          "wdayname_short": "Сб",
+          "value": "2023-03-11",
+          "mon_sr": "марта",
+          "mday": 11
+        },
+        {
+          "wdayname_short": "Вс",
+          "value": "2023-03-12",
+          "mon_sr": "марта",
+          "mday": 12
+        }
+      ]
+    }
+  },
+  "current_offset": 21600,
+  "schedule": [
+    {
+      "channel": {
+        "name": "НТК",
+        "pic_big": null,
+        "pic_small": {
+          "source": {
+            "href": "https://kino.mail.ru",
+            "name": "Кино Mail.ru",
+            "url": "https://kino.mail.ru",
+            "title": "Кино Mail.ru",
+            "id": 2
+          },
+          "width": 32,
+          "height": 32,
+          "uuid": "3d96277c-3a12-5c09-8d78-51f902023010",
+          "key": "AAAC-02cpiODmNiY4o5Y4vvw_XlyvHBvv4xZp7lqFKHhFCHZ2Baj8KewhNVkhHOeLnc9ovU1RptsKj3A7g5_e4WnTZs",
+          "params": {
+            "scale": 1,
+            "dpr": [
+              200
+            ]
+          },
+          "url": "https://resizer.mail.ru/p/3d96277c-3a12-5c09-8d78-51f902023010/AAAC-02cpiODmNiY4o5Y4vvw_XlyvHBvv4xZp7lqFKHhFCHZ2Baj8KewhNVkhHOeLnc9ovU1RptsKj3A7g5_e4WnTZs.png",
+          "baseURL": "https://resizer.mail.ru/p/",
+          "title": "НТК logo",
+          "fmt": [
+            "png",
+            "webp"
+          ]
+        },
+        "is_promo": 0,
+        "pic_url": "https://resizer.mail.ru/p/3d96277c-3a12-5c09-8d78-51f902023010/AAAC-02cpiODmNiY4o5Y4vvw_XlyvHBvv4xZp7lqFKHhFCHZ2Baj8KewhNVkhHOeLnc9ovU1RptsKj3A7g5_e4WnTZs.png",
+        "pic_url_128": null,
+        "url": "/astana/channel/1644/",
+        "slug": "ntk",
+        "id": "1644",
+        "pic_url_64": "https://resizer.mail.ru/p/3d96277c-3a12-5c09-8d78-51f902023010/dpr:200/AAAC-02cpiODmNiY4o5Y4vvw_XlyvHBvv4xZp7lqFKHhFCHZ2Baj8KewhNVkhHOeLnc9ovU1RptsKj3A7g5_e4WnTZs.png"
+      },
+      "event": {
+        "current": [
+          {
+            "channel_id": "1644",
+            "name": "Қызық Live. Прямая трансляция",
+            "onair": 1,
+            "category_id": 8,
+            "episode_title": "",
+            "url": "/astana/channel/1644/203504050/",
+            "id": "203504050",
+            "start": "16:00",
+            "episode_num": 0
+          },
+          {
+            "channel_id": "1644",
+            "name": "Сильнее",
+            "category_id": 1,
+            "episode_title": "",
+            "url": "/astana/channel/1644/203504059/",
+            "id": "203504059",
+            "recommended": {
+              "rate_val": "6.6",
+              "image": {
+                "src": "https://resizer.mail.ru/p/aa5d217a-7b00-5f63-be91-52e1ce9b6c65/AAACnnr3AxPKEkm0_UbH5thIoAPHuIahIfBEbvK2QAiWG4ubeMMX-DYDJQvnpmy30111EEO_udTWua1oM0WKjGUF2mw.jpg"
+              },
+              "descr": "<p>Трагическая история о теракте, произошедшем на Бостонском марафоне. В центре сюжета Джефф Бауман, один из участников этих трагических событий, лишившийся в результате взрывов обеих ног.</p>"
+            },
+            "start": "17:00",
+            "our_event_id": "915934",
+            "episode_num": 0
+          },
+          {
+            "channel_id": "1644",
+            "video": {
+              "currency": "RUB",
+              "price_min": "0.00",
+              "price_txt": null
+            },
+            "name": "Однажды в России",
+            "category_id": 14,
+            "episode_title": "",
+            "url": "/astana/channel/1644/203504018/",
+            "id": "203504018",
+            "recommended": {
+              "rate_val": "7.1",
+              "video": {
+                "price_txt": null,
+                "url": "https://kino.mail.ru/tvshow_848249_odnazhdi_v_rossii/?autoplay=1"
+              },
+              "image": {
+                "src": "https://resizer.mail.ru/p/9c6a5591-2188-5a73-8933-5427969ec558/AQAChom7Q5jyJqldV-vHXaSuC71Rrg_HBgR1OoJseeEPloxmeCPyQ-Mc9uLMOuvAM2cA1T6XujCPoEqQGNJ5wXKx88w.jpg"
+              },
+              "descr": ""
+            },
+            "start": "19:30",
+            "our_event_id": "848249",
+            "episode_num": 0
+          },
+          {
+            "channel_id": "1644",
+            "name": "Такси",
+            "category_id": 14,
+            "episode_title": "",
+            "url": "/astana/channel/1644/203504000/",
+            "id": "203504000",
+            "start": "20:00",
+            "episode_num": 0
+          },
+          {
+            "channel_id": "1644",
+            "name": "Специальное задание",
+            "category_id": 17,
+            "episode_title": "",
+            "url": "/astana/channel/1644/203504037/",
+            "id": "203504037",
+            "start": "20:30",
+            "episode_num": 0
+          },
+          {
+            "channel_id": "1644",
+            "name": "Максимиллиан",
+            "category_id": 1,
+            "episode_title": "",
+            "url": "/astana/channel/1644/203504134/",
+            "id": "203504134",
+            "start": "22:20",
+            "our_event_id": "933727",
+            "episode_num": 0
+          },
+          {
+            "channel_id": "1644",
+            "name": "Умма",
+            "category_id": 10,
+            "episode_title": "",
+            "url": "/astana/channel/1644/203504067/",
+            "id": "203504067",
+            "start": "23:30",
+            "episode_num": 0
+          },
+          {
+            "channel_id": "1644",
+            "name": "Ауылдастар",
+            "category_id": 2,
+            "episode_title": "",
+            "url": "/astana/channel/1644/203504140/",
+            "id": "203504140",
+            "start": "01:00",
+            "episode_num": 0
+          },
+          {
+            "channel_id": "1644",
+            "name": "Бүлдір-күлдір",
+            "category_id": 18,
+            "episode_title": "",
+            "url": "/astana/channel/1644/203504115/",
+            "id": "203504115",
+            "start": "01:50",
+            "episode_num": 0
+          },
+          {
+            "channel_id": "1644",
+            "name": "Екі езу",
+            "category_id": 18,
+            "episode_title": "",
+            "url": "/astana/channel/1644/203504136/",
+            "id": "203504136",
+            "start": "04:00",
+            "episode_num": 0
+          }
+        ],
+        "past": [
+          {
+            "channel_id": "1644",
+            "name": "ҚР Әнұраны",
+            "category_id": 23,
+            "episode_title": "",
+            "url": "/astana/channel/1644/203504075/",
+            "id": "203504075",
+            "start": "06:55",
+            "episode_num": 0
+          },
+          {
+            "channel_id": "1644",
+            "name": "Разминка",
+            "category_id": 16,
+            "episode_title": "",
+            "url": "/astana/channel/1644/203504045/",
+            "id": "203504045",
+            "start": "07:00",
+            "episode_num": 0
+          },
+          {
+            "channel_id": "1644",
+            "name": "Бүлдір-күлдір",
+            "category_id": 18,
+            "episode_title": "",
+            "url": "/astana/channel/1644/203504105/",
+            "id": "203504105",
+            "start": "07:15",
+            "episode_num": 0
+          },
+          {
+            "channel_id": "1644",
+            "name": "Ауылдастар",
+            "category_id": 2,
+            "episode_title": "",
+            "url": "/astana/channel/1644/203504109/",
+            "id": "203504109",
+            "start": "08:00",
+            "episode_num": 0
+          },
+          {
+            "channel_id": "1644",
+            "name": "Екі езу",
+            "category_id": 18,
+            "episode_title": "",
+            "url": "/astana/channel/1644/203504076/",
+            "id": "203504076",
+            "start": "08:50",
+            "episode_num": 0
+          },
+          {
+            "channel_id": "1644",
+            "name": "Ревю NEWS",
+            "category_id": 16,
+            "episode_title": "",
+            "url": "/astana/channel/1644/203504046/",
+            "id": "203504046",
+            "start": "09:35",
+            "episode_num": 0
+          },
+          {
+            "channel_id": "1644",
+            "video": {
+              "currency": "RUB",
+              "price_min": "0.00",
+              "price_txt": null
+            },
+            "name": "Маша и Медведь",
+            "category_id": 21,
+            "episode_title": "",
+            "url": "/astana/channel/1644/203504051/",
+            "id": "203504051",
+            "start": "09:40",
+            "our_event_id": "761825",
+            "episode_num": 0
+          },
+          {
+            "channel_id": "1644",
+            "name": "Джеки Чанның оқиғасы",
+            "category_id": 21,
+            "episode_title": "",
+            "url": "/astana/channel/1644/203504009/",
+            "id": "203504009",
+            "start": "10:00",
+            "episode_num": 0
+          },
+          {
+            "channel_id": "1644",
+            "name": "Орел и Решка. Девчата",
+            "category_id": 17,
+            "episode_title": "",
+            "url": "/astana/channel/1644/203504081/",
+            "id": "203504081",
+            "start": "10:40",
+            "episode_num": 0
+          },
+          {
+            "channel_id": "1644",
+            "name": "Такси",
+            "category_id": 14,
+            "episode_title": "",
+            "url": "/astana/channel/1644/203504031/",
+            "id": "203504031",
+            "start": "11:30",
+            "episode_num": 0
+          },
+          {
+            "channel_id": "1644",
+            "name": "Бір болайық",
+            "category_id": 14,
+            "episode_title": "",
+            "url": "/astana/channel/1644/203504005/",
+            "id": "203504005",
+            "start": "12:00",
+            "episode_num": 0
+          }
+        ]
+      }
+    }
+  ]
+}

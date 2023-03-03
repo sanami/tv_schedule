@@ -1,5 +1,8 @@
 defmodule TvSchedule do
+  require Logger
+
   @host URI.parse("https://tv.mail.ru")
+  @region_id 378
 
   def load_ignore_names do
     case File.read "config/tv_ignore.txt" do
@@ -9,19 +12,28 @@ defmodule TvSchedule do
     end
   end
 
-  def get_channel(channel) do
-    url = URI.merge(@host, "/astana/channel/#{channel}/")
+  def get_channel(channel_id, date, dump_data \\ false) do
+    url = URI.merge(@host, "/ajax/channel/?channel_id=#{channel_id}&date=#{date}&region_id=#{@region_id}")
+    Logger.debug fn -> "get_channel #{url}" end
+
     %{status_code: 200, body: body} = HTTPoison.get! url
 
-    File.mkdir_p("tmp")
-    File.write("tmp/#{channel}.html", body)
+    if dump_data do
+      File.mkdir_p("tmp")
+      File.write("tmp/#{channel_id}.json", body)
+    end
 
-    {channel, body}
+    body
   end
 
-  def get_item_details(item_id) do
-    url = URI.merge(@host, "/ajax/event/?id=#{item_id}&region_id=378")
+  def get_item_details(item_id, dump_data \\ false) do
+    url = URI.merge(@host, "/ajax/event/?id=#{item_id}&region_id=#{@region_id}")
     %{status_code: 200, body: body} = HTTPoison.get! url
+
+    if dump_data do
+      File.mkdir_p("tmp")
+      File.write("tmp/#{item_id}.json", body)
+    end
 
     body
   end
@@ -51,51 +63,46 @@ defmodule TvSchedule do
     info
   end
 
-  def process_item(time, name, today, channel \\ 0) do
-    [hour, minute] = String.split(time, ":")
+  def process_time(time_str, date) do
+    [hour, minute] = String.split(time_str, ":")
     {hour, _} = Integer.parse(hour)
     {minute, _} = Integer.parse(minute)
 
-    date_time = Map.merge(today, %{hour: hour, minute: minute, second: 0, microsecond: {0, 0}})
+    time = Time.new!(hour, minute, 0)
+    date_time = NaiveDateTime.new!(date, time)
 
-    date_time = if hour < 5 do
-      DateTime.add(date_time, 60*60*24, :second) #TODO :day
+    if hour <= 4 do
+      NaiveDateTime.add(date_time, 60*60*24, :second) #TODO :day
     else
       date_time
     end
-
-    shift_min = if channel == 717, do: -120, else: 0
-    date_time = DateTime.add(date_time, shift_min*60, :second) #TODO :minute
-
-    %{time: date_time, name: name}
   end
 
-  def parse_channel({channel, html}, today \\ DateTime.utc_now) do
-    {:ok, doc} = Floki.parse_document(html)
+  def parse_channel(json_str) do
+    json = Jason.decode!(json_str, keys: :atoms)
 
-    name = doc |> Floki.find(".p-channels__item__info__title") |> Floki.text
+    date = Date.from_iso8601! json.form.date.value
 
-    items = Floki.find(doc, ".p-programms__item")
-    |> Enum.map(fn (item_el) ->
-        time = Floki.find(item_el, ".p-programms__item__time-value") |> Floki.text
-        name = Floki.find(item_el, ".p-programms__item__name-link") |> Floki.text
-        item_id = Floki.attribute(item_el, "data-id") |> hd
-
-        if String.length(time) > 0 do
-          item = process_item(time, name, today, channel)
-          Map.merge(item, %{name: name, item_id: item_id})
-        end
+    # %{time: date_time, name: name, id: item_id, duration: duration}
+    items = get_in(json, [:schedule, Access.at(0), :event])
+    items = (items[:past] ++ items[:current])
+    |> Enum.map(fn item ->
+      item |> Map.take([:id, :name, :category_id]) |> Map.merge(%{time: process_time(item.start, date)})
       end)
-    |> Enum.filter(&is_map/1)
     |> Enum.chunk_every(2,1)
     |> Enum.map(fn
-        [item] -> Map.put(item, :duration, 0)
-        [item, next_item]->
-          duration = DateTime.diff(next_item.time, item.time, :second) |> div(60) #TODO :minute
-          Map.put(item, :duration, duration)
+      [item] -> Map.put(item, :duration, 0)
+      [item, next_item]->
+        duration = NaiveDateTime.diff(next_item.time, item.time, :second) |> div(60) #TODO :minute
+        Map.put(item, :duration, duration)
       end)
 
-    %{channel: channel, name: name, items: items}
+    %{
+      id: get_in(json, [:schedule, Access.at(0), :channel, :id]),
+      name: get_in(json, [:schedule, Access.at(0), :channel, :name]),
+      date: date,
+      items: items
+    }
   end
 
   def filter_items(items, options \\ []) do
@@ -110,24 +117,24 @@ defmodule TvSchedule do
   end
 
   def print_schedule(schedule, show_details \\ false) do
-    IO.puts "\n#{schedule.name} #{schedule.channel}"
+    IO.puts "\n#{schedule.name} [#{schedule.id}]"
 
     items = filter_items(schedule.items, ignore_names: load_ignore_names(), by_time: true, min_duration: 45)
 
     Enum.each items, fn item ->
-      time = item.time |> DateTime.to_time |> Time.to_string |> String.slice(0..4)
+      time = item.time |> NaiveDateTime.to_time |> Time.to_string |> String.slice(0..4)
       dur_hour = item.duration |> div(60) |> to_string |> String.pad_leading(2)
       dur_min = item.duration |> Integer.mod(60)|> to_string |> String.pad_leading(2, "0")
 
       details = try do
         if show_details do
-          data = item.item_id |> get_item_details |> parse_item_details
+          data = item.id |> get_item_details |> parse_item_details
           "#{Enum.join(data.genre, ", ")} #{data.year} #{Enum.join(data.country, ", ")} #{data.imdb_rating} #{String.slice(data.descr || "", 0, 70)}"
         end
       rescue _ -> nil
       end
 
-      IO.puts "#{time} #{dur_hour}:#{dur_min} #{item.name} [#{item.item_id}] #{details}"
+      IO.puts "#{time} #{dur_hour}:#{dur_min} #{item.name} [#{item.id}] #{details}"
     end
 
     :ok
@@ -142,10 +149,10 @@ defmodule TvSchedule do
     :ok
   end
 
-  def run(_date_str \\ :today) do
+  def run(date_str \\ :today) do
     for channel <- [1644, 1606, 1502, 717, 1455] do
       channel
-      |> get_channel
+      |> get_channel(date_str)
       |> parse_channel
       |> print_schedule(true)
     end
