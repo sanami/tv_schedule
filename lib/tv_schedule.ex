@@ -149,10 +149,21 @@ defmodule TvSchedule do
     :ok
   end
 
+  def get_date(date_str) do
+    cond do
+      is_number(date_str) -> Date.add(Date.utc_today, date_str)
+      is_bitstring(date_str) && date_str =~ ~r/\A[\d-]+\z/ -> Date.from_iso8601!(date_str)
+      true -> Date.utc_today
+    end
+  end
+
   def run(date_str \\ :today) do
-    for channel <- [1644, 1606, 1502, 717, 1455] do
+    date = get_date(date_str)
+    IO.puts "#{date}"
+
+    for channel <- [717, 1455, 1606, 1644, 1502] do
       channel
-      |> get_channel(date_str)
+      |> get_channel(date)
       |> parse_channel
       |> print_schedule(true)
     end
