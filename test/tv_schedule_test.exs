@@ -89,5 +89,14 @@ defmodule TvScheduleTest do
     assert get_date("2") == Date.add(Date.utc_today, 2)
   end
 
+  test "logger" do
+    IO.inspect Logger.level
+    assert Logger.level == :debug
+
+    Logger.configure(level: :info)
+    IO.inspect Logger.level
+    assert Logger.level == :info
+  end
+
   test "run", do: TvSchedule.run(:today, [1644, 1502])
 end

@@ -1,5 +1,11 @@
 import Config
 
+config :logger,
+  backends: [:console],
+  compile_time_purge_matching: [
+    [level_lower_than: :info]
+  ]
+
 config :ex_tools,
   key1: "value1",
   key2: "value2"
