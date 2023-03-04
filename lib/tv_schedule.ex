@@ -129,7 +129,8 @@ defmodule TvSchedule do
       details = try do
         if show_details do
           data = item.id |> get_item_details |> parse_item_details
-          "#{Enum.join(data.genre, ", ")} #{data.year} #{Enum.join(data.country, ", ")} #{data.imdb_rating} #{String.slice(data.descr || "", 0, 70)}"
+          #TODO String.slice(data.descr || "", 0, 70)
+          "#{data.name_eng} #{Enum.join(data.genre, ", ")} #{data.year} #{Enum.join(data.country, ", ")} #{data.imdb_rating}"
         end
       rescue _ -> nil
       end
@@ -157,11 +158,11 @@ defmodule TvSchedule do
     end
   end
 
-  def run(date_str \\ :today) do
+  def run(date_str \\ :today, channel_list \\ [717, 1455, 1606, 1644, 1502]) do
     date = get_date(date_str)
     IO.puts "#{date}"
 
-    for channel <- [717, 1455, 1606, 1644, 1502] do
+    for channel <- channel_list do
       channel
       |> get_channel(date)
       |> parse_channel

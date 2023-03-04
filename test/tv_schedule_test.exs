@@ -88,5 +88,5 @@ defmodule TvScheduleTest do
     assert get_date(2) == Date.add(Date.utc_today, 2)
   end
 
-#  test "run", do: TvSchedule.run
+  test "run", do: TvSchedule.run(:today, [1644, 1502])
 end
