@@ -14,7 +14,7 @@ defmodule TvSchedule do
 
   def get_channel(channel_id, date, dump_data \\ false) do
     url = URI.merge(@host, "/ajax/channel/?channel_id=#{channel_id}&date=#{date}&region_id=#{@region_id}")
-    Logger.debug fn -> "get_channel #{url}" end
+    Logger.debug "get_channel #{url}"
 
     %{status_code: 200, body: body} = HTTPoison.get! url
 
@@ -126,13 +126,16 @@ defmodule TvSchedule do
       dur_hour = item.duration |> div(60) |> to_string |> String.pad_leading(2)
       dur_min = item.duration |> Integer.mod(60)|> to_string |> String.pad_leading(2, "0")
 
-      details = try do
-        if show_details do
+      details = if show_details do
+        try do
           data = item.id |> get_item_details |> parse_item_details
           #TODO String.slice(data.descr || "", 0, 70)
-          "#{data.name_eng} #{Enum.join(data.genre, ", ")} #{data.year} #{Enum.join(data.country, ", ")} #{data.imdb_rating}"
+          details = [data.name_eng, Enum.join(data.genre, ", "), data.year, Enum.join(data.country, ", "), data.imdb_rating]
+          |> Enum.reject(&(is_nil(&1) || (is_bitstring(&1) && String.length(&1) == 0)))
+          Enum.join(details, " ")
+        rescue
+          MatchError -> nil
         end
-      rescue _ -> nil
       end
 
       IO.puts "#{time} #{dur_hour}:#{dur_min} #{item.name} [#{item.id}] #{details}"

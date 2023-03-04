@@ -79,7 +79,7 @@ defmodule TvScheduleTest do
   end
 
   test "print_schedule" do
-    parse_channel(@channel1) |> print_schedule(true)
+    parse_channel(@channel1) |> print_schedule(false)
   end
 
   test "get_date" do
