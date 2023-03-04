@@ -156,6 +156,7 @@ defmodule TvSchedule do
   def get_date(date_str) do
     cond do
       is_number(date_str) -> Date.add(Date.utc_today, date_str)
+      is_bitstring(date_str) && date_str =~ ~r/\A\d+\z/ -> Date.add(Date.utc_today, String.to_integer(date_str))
       is_bitstring(date_str) && date_str =~ ~r/\A[\d-]+\z/ -> Date.from_iso8601!(date_str)
       true -> Date.utc_today
     end

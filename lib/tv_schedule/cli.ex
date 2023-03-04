@@ -26,7 +26,7 @@ defmodule TvSchedule.CLI do
 
   def process(:help) do
     IO.puts("""
-      usage: tv_schedule [ date | today ]
+      usage: tv_schedule [ date | offset day | today ]
       """)
     # System.halt(0)
   end
