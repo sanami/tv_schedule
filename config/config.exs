@@ -12,4 +12,6 @@ config :ex_tools,
 
 # Application.fetch_env!(:ex_tools, :key1)
 
-# import_config "#{config_env()}.exs"
+env_file = "#{config_env()}.exs"
+# IO.puts env_file
+if File.exists?(env_file), do: import_config(env_file)

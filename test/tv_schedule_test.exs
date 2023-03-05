@@ -78,8 +78,14 @@ defmodule TvScheduleTest do
     assert length(res) > 1
   end
 
-  test "print_schedule" do
-    parse_channel(@channel1) |> print_schedule(false)
+  test "load_channel" do
+    res = parse_channel(@channel1) |> load_channel
+    IO.inspect res
+    assert length(res.items) == 3
+  end
+
+  test "print_channel" do
+    parse_channel(@channel1) |> print_channel
   end
 
   test "get_date" do

@@ -28,6 +28,8 @@ defmodule TvSchedule do
 
   def get_item_details(item_id, dump_data \\ false) do
     url = URI.merge(@host, "/ajax/event/?id=#{item_id}&region_id=#{@region_id}")
+    Logger.debug "get_item_details #{url}"
+
     %{status_code: 200, body: body} = HTTPoison.get! url
 
     if dump_data do
@@ -87,8 +89,18 @@ defmodule TvSchedule do
     items = get_in(json, [:schedule, Access.at(0), :event])
     items = (items[:past] ++ items[:current])
     |> Enum.map(fn item ->
-      item |> Map.take([:id, :name, :category_id]) |> Map.merge(%{time: process_time(item.start, date)})
-      end)
+      item
+      |> Map.take([:id, :name, :category_id])
+      |> Map.merge(%{
+        time: process_time(item.start, date),
+        country: [],
+        descr: nil,
+        genre: [],
+        imdb_rating: nil,
+        name_eng: nil,
+        year: nil
+      })
+    end)
     |> Enum.chunk_every(2,1)
     |> Enum.map(fn
       [item] -> Map.put(item, :duration, 0)
@@ -105,6 +117,29 @@ defmodule TvSchedule do
     }
   end
 
+  def load_channel(channel) do
+    ignore_names = load_ignore_names()
+
+    items =
+      channel.items
+      |> filter_items(ignore_names: ignore_names, by_time: true, min_duration: 45)
+      |> Enum.map(fn item ->
+        item_details =
+          try do
+            item.id |> get_item_details() |> parse_item_details()
+          rescue
+            ex ->
+              Logger.error ex
+
+              %{}
+          end
+
+        Map.merge(item, item_details)
+      end)
+
+    %{channel | items: items}
+  end
+
   def filter_items(items, options \\ []) do
    ignore_names = Keyword.get(options, :ignore_names) || []
    by_time = Keyword.get(options, :by_time)
@@ -116,29 +151,27 @@ defmodule TvSchedule do
     end)
   end
 
-  def print_schedule(schedule, show_details \\ false) do
-    IO.puts "\n#{schedule.name} [#{schedule.id}]"
+  def print_channel(channel) do
+    IO.puts "\n#{channel.name} [#{channel.id}]"
 
-    items = filter_items(schedule.items, ignore_names: load_ignore_names(), by_time: true, min_duration: 45)
+    Enum.each channel.items, fn item ->
+      {primary_name, secondary_name} =
+        if item.name_eng && String.length(item.name_eng) > 1 do
+          {item.name_eng, item.name}
+        else
+          {item.name, nil}
+        end
 
-    Enum.each items, fn item ->
       time = item.time |> NaiveDateTime.to_time |> Time.to_string |> String.slice(0..4)
       dur_hour = item.duration |> div(60) |> to_string |> String.pad_leading(2)
       dur_min = item.duration |> Integer.mod(60)|> to_string |> String.pad_leading(2, "0")
 
-      details = if show_details do
-        try do
-          data = item.id |> get_item_details |> parse_item_details
-          #TODO String.slice(data.descr || "", 0, 70)
-          details = [data.name_eng, Enum.join(data.genre, ", "), data.year, Enum.join(data.country, ", "), data.imdb_rating]
-          |> Enum.reject(&(is_nil(&1) || (is_bitstring(&1) && String.length(&1) == 0)))
-          Enum.join(details, " ")
-        rescue
-          MatchError -> nil
-        end
-      end
+      details =
+        [secondary_name, Enum.join(item.genre, ", "), item.year, Enum.join(item.country, ", "), item.imdb_rating]
+        |> Enum.reject(&(is_nil(&1) || (is_bitstring(&1) && String.length(&1) == 0)))
+        |> Enum.join(" ")
 
-      IO.puts "#{time} #{dur_hour}:#{dur_min} #{item.name} [#{item.id}] #{details}"
+      IO.puts "#{time} #{dur_hour}:#{dur_min} #{primary_name} [#{item.id}] #{details}"
     end
 
     :ok
@@ -170,7 +203,8 @@ defmodule TvSchedule do
       channel
       |> get_channel(date)
       |> parse_channel
-      |> print_schedule(true)
+      |> load_channel
+      |> print_channel
     end
 
     :ok
