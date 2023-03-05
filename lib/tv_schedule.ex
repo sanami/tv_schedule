@@ -117,25 +117,28 @@ defmodule TvSchedule do
     }
   end
 
+  def load_item(item) do
+    item_details =
+      try do
+        item.id |> get_item_details() |> parse_item_details()
+      rescue
+        ex ->
+          Logger.error ex
+          %{}
+      end
+
+    Map.merge(item, item_details)
+  end
+
   def load_channel(channel) do
     ignore_names = TvSchedule.Options.get(:ignore_names)
 
     items =
       channel.items
       |> filter_items(ignore_names: ignore_names, by_time: true, min_duration: 45)
-      |> Enum.map(fn item ->
-          item_details =
-            try do
-              item.id |> get_item_details() |> parse_item_details()
-            rescue
-              ex ->
-                Logger.error ex
-
-                %{}
-            end
-
-          Map.merge(item, item_details)
-        end)
+      # |> Enum.map(fn item -> load_item(item) end)
+      |> Enum.map(&Task.async(fn -> load_item(&1) end))
+      |> Enum.map(&Task.await/1)
 
     %{channel | items: items}
   end
@@ -146,7 +149,7 @@ defmodule TvSchedule do
    min_duration = Keyword.get(options, :min_duration) || 0
 
     Enum.filter(items, fn item ->
-      (!by_time || ((item.time.hour in 18..23) || (item.time.hour in 0..2))) &&
+      (!by_time || ((item.time.hour in 15..23) || (item.time.hour in 0..2))) &&
       item.duration >= min_duration && !(item.name in ignore_names)
     end)
   end
