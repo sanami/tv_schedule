@@ -6,6 +6,11 @@ defmodule TvScheduleTest do
   @event1 File.read! "test/fixtures/203043290.json"
   @event2 File.read! "test/fixtures/203059401.json"
 
+  setup do
+    TvSchedule.Options.start_link
+    :ok
+  end
+
   test "get_channel" do
     res = String.length(get_channel(1644, :today, true))
     IO.inspect res
@@ -76,6 +81,8 @@ defmodule TvScheduleTest do
     res = load_ignore_names()
     IO.inspect res
     assert length(res) > 1
+
+    assert TvSchedule.Options.get(:ignore_names) == res
   end
 
   test "load_channel" do

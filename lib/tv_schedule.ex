@@ -92,21 +92,21 @@ defmodule TvSchedule do
       item
       |> Map.take([:id, :name, :category_id])
       |> Map.merge(%{
-        time: process_time(item.start, date),
-        country: [],
-        descr: nil,
-        genre: [],
-        imdb_rating: nil,
-        name_eng: nil,
-        year: nil
-      })
+          time: process_time(item.start, date),
+          country: [],
+          descr: nil,
+          genre: [],
+          imdb_rating: nil,
+          name_eng: nil,
+          year: nil
+        })
     end)
     |> Enum.chunk_every(2,1)
     |> Enum.map(fn
-      [item] -> Map.put(item, :duration, 0)
-      [item, next_item]->
-        duration = NaiveDateTime.diff(next_item.time, item.time, :second) |> div(60) #TODO :minute
-        Map.put(item, :duration, duration)
+        [item] -> Map.put(item, :duration, 0)
+        [item, next_item]->
+          duration = NaiveDateTime.diff(next_item.time, item.time, :second) |> div(60) #TODO :minute
+          Map.put(item, :duration, duration)
       end)
 
     %{
@@ -118,24 +118,24 @@ defmodule TvSchedule do
   end
 
   def load_channel(channel) do
-    ignore_names = load_ignore_names()
+    ignore_names = TvSchedule.Options.get(:ignore_names)
 
     items =
       channel.items
       |> filter_items(ignore_names: ignore_names, by_time: true, min_duration: 45)
       |> Enum.map(fn item ->
-        item_details =
-          try do
-            item.id |> get_item_details() |> parse_item_details()
-          rescue
-            ex ->
-              Logger.error ex
+          item_details =
+            try do
+              item.id |> get_item_details() |> parse_item_details()
+            rescue
+              ex ->
+                Logger.error ex
 
-              %{}
-          end
+                %{}
+            end
 
-        Map.merge(item, item_details)
-      end)
+          Map.merge(item, item_details)
+        end)
 
     %{channel | items: items}
   end
@@ -196,6 +196,8 @@ defmodule TvSchedule do
   end
 
   def run(date_str \\ :today, channel_list \\ [717, 1455, 1606, 1644, 1502]) do
+    TvSchedule.Options.start_link
+
     date = get_date(date_str)
     IO.puts "#{date}"
 
