@@ -198,18 +198,44 @@ defmodule TvSchedule do
     end
   end
 
+  def channel_worker(channel_id, date, parent_pid) do
+    channel = channel_id |> get_channel(date) |> parse_channel |> load_channel
+
+    send parent_pid, {:channel, channel_id, channel}
+  end
+
+  def parent_worker(channel_list, date, result, start_workers \\ false)
+
+  def parent_worker([], _date, result, _start_workers), do: result
+
+  def parent_worker(channel_list, date, result, start_workers) do
+    if start_workers do
+      Enum.each channel_list, fn (channel_id)->
+        spawn_link(TvSchedule, :channel_worker, [channel_id, date, self()])
+      end
+    end
+
+    receive do
+      {:channel, channel_id, channel} ->
+        IO.write "#{channel_id} "
+
+        updated_result = Map.put(result, channel_id, channel)
+        remaining_channel_list = List.delete(channel_list, channel_id)
+
+        parent_worker(remaining_channel_list, date, updated_result)
+    end
+  end
+
   def run(date_str \\ :today, channel_list \\ [717, 1455, 1606, 1644, 1502]) do
     TvSchedule.Options.start_link
 
     date = get_date(date_str)
     IO.puts "#{date}"
 
+    result = parent_worker(channel_list, date, %{}, true)
+
     for channel <- channel_list do
-      channel
-      |> get_channel(date)
-      |> parse_channel
-      |> load_channel
-      |> print_channel
+      print_channel(result[channel_id])
     end
 
     :ok
