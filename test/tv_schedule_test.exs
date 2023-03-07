@@ -11,8 +11,17 @@ defmodule TvScheduleTest do
     :ok
   end
 
+  test "cache" do
+    assert String.ends_with?(cache_file_path("1"), ".json")
+
+    save_cache("1", "12")
+    assert load_cache("0", true) == nil
+    assert load_cache("1", false) == "12"
+    assert load_cache("1", true) == nil
+  end
+
   test "get_channel" do
-    res = String.length(get_channel(1644, :today, true))
+    res = String.length(get_channel(1644, Date.utc_today, true))
     IO.inspect res
     assert res > 1000
   end

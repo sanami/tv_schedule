@@ -4,6 +4,25 @@ defmodule TvSchedule do
   @host URI.parse("https://tv.mail.ru")
   @region_id 378
 
+  def cache_file_path(file_id), do: "tmp/cache/#{file_id}.json"
+
+  def save_cache(file_id, data) do
+    File.mkdir_p("tmp/cache")
+
+    if data && String.length(data) > 0 do
+      File.write(cache_file_path(file_id), data)
+    end
+  end
+
+  def load_cache(_file_id, true), do: nil
+
+  def load_cache(file_id, false) do
+    case File.read(cache_file_path(file_id)) do
+      {:ok, data} -> data
+      {:error, _} -> nil
+    end
+  end
+
   def load_ignore_names do
     case File.read "config/tv_ignore.txt" do
       {:ok, text} ->
@@ -12,32 +31,37 @@ defmodule TvSchedule do
     end
   end
 
-  def get_channel(channel_id, date, dump_data \\ false) do
-    url = URI.merge(@host, "/ajax/channel/?channel_id=#{channel_id}&date=#{date}&region_id=#{@region_id}")
-    Logger.debug "get_channel #{url}"
+  def get_channel(channel_id, date, force \\ false) do
+    file_id = "#{channel_id}.#{date}"
+    data = load_cache(file_id, force)
 
-    %{status_code: 200, body: body} = HTTPoison.get! url
+    if data do
+      data
+    else
+      url = URI.merge(@host, "/ajax/channel/?channel_id=#{channel_id}&date=#{date}&region_id=#{@region_id}")
+      Logger.debug "get_channel #{url}"
 
-    if dump_data do
-      File.mkdir_p("tmp")
-      File.write("tmp/#{channel_id}.json", body)
+      %{status_code: 200, body: body} = HTTPoison.get! url
+      save_cache(file_id, body)
+
+      body
     end
-
-    body
   end
 
-  def get_item_details(item_id, dump_data \\ false) do
-    url = URI.merge(@host, "/ajax/event/?id=#{item_id}&region_id=#{@region_id}")
-    Logger.debug "get_item_details #{url}"
+  def get_item_details(item_id, force \\ false) do
+    data = load_cache(item_id, force)
 
-    %{status_code: 200, body: body} = HTTPoison.get! url
+    if data do
+      data
+    else
+      url = URI.merge(@host, "/ajax/event/?id=#{item_id}&region_id=#{@region_id}")
+      Logger.debug "get_item_details #{url}"
 
-    if dump_data do
-      File.mkdir_p("tmp")
-      File.write("tmp/#{item_id}.json", body)
+      %{status_code: 200, body: body} = HTTPoison.get! url
+      save_cache(item_id, body)
+
+      body
     end
-
-    body
   end
 
   def replace_html_entities(nil), do: ""
@@ -170,8 +194,8 @@ defmodule TvSchedule do
       dur_min = item.duration |> Integer.mod(60)|> to_string |> String.pad_leading(2, "0")
 
       details =
-        [secondary_name, Enum.join(item.genre, ", "), item.year, Enum.join(item.country, ", "), item.imdb_rating]
-        |> Enum.reject(&(is_nil(&1) || (is_bitstring(&1) && String.length(&1) == 0)))
+        [secondary_name, "(#{Enum.join(item.genre, ", ")})", item.year, Enum.join(item.country, ", "), item.imdb_rating]
+        |> Enum.reject(&(is_nil(&1) || (is_bitstring(&1) && (String.length(&1) == 0 || &1 == "()"))))
         |> Enum.join(" ")
 
       IO.puts "#{time} #{dur_hour}:#{dur_min} #{primary_name} [#{item.id}] #{details}"
@@ -234,10 +258,8 @@ defmodule TvSchedule do
 
     result = parent_worker(channel_list, date, %{}, true)
 
-    for channel <- channel_list do
+    Enum.each channel_list, fn channel_id ->
       print_channel(result[channel_id])
     end
-
-    :ok
   end
 end
