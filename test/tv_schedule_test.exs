@@ -72,6 +72,11 @@ defmodule TvScheduleTest do
     res = process_time("03:30", date1)
     assert res.hour == 3
     IO.inspect NaiveDateTime.to_date(res) == Date.add(date1, 1)
+
+    # shift
+    res = process_time("18:30", date1, "717")
+    assert res.hour == 15
+    assert res.minute == 30
   end
 
   test "filter_items" do

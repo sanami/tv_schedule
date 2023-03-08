@@ -80,7 +80,7 @@ defmodule TvSchedule do
       country: (json.tv_event[:country] || []) |> Enum.map(&(&1.title)),
       name: json.tv_event.name,
       descr: json.tv_event.descr |> replace_html_entities,
-      genre: (json.tv_event[:genre] || []) |> Enum.map(&(&1.title)),
+      genre: (json.tv_event[:genre] || []) |> Enum.map(&(String.downcase(&1.title))),
       imdb_rating: json.tv_event |> get_in([:afisha_event, :imdb_rating]),
       name_eng: json.tv_event |> get_in([:afisha_event, :name_eng]),
       year: json.tv_event |> get_in([:year, :title])
@@ -89,7 +89,7 @@ defmodule TvSchedule do
     info
   end
 
-  def process_time(time_str, date) do
+  def process_time(time_str, date, channel_id \\ nil) do
     [hour, minute] = String.split(time_str, ":")
     {hour, _} = Integer.parse(hour)
     {minute, _} = Integer.parse(minute)
@@ -97,16 +97,20 @@ defmodule TvSchedule do
     time = Time.new!(hour, minute, 0)
     date_time = NaiveDateTime.new!(date, time)
 
-    if hour <= 4 do
+    date_time = if hour <= 4 do
       NaiveDateTime.add(date_time, 60*60*24, :second) #TODO :day
     else
       date_time
     end
+
+    shift_min = if channel_id == "717", do: -120, else: 0
+    NaiveDateTime.add(date_time, shift_min*60, :second) #TODO :minute
   end
 
   def parse_channel(json_str) do
     json = Jason.decode!(json_str, keys: :atoms)
 
+    channel_id = get_in(json, [:schedule, Access.at(0), :channel, :id])
     date = Date.from_iso8601! json.form.date.value
 
     # %{time: date_time, name: name, id: item_id, duration: duration}
@@ -116,7 +120,7 @@ defmodule TvSchedule do
       item
       |> Map.take([:id, :name, :category_id])
       |> Map.merge(%{
-          time: process_time(item.start, date),
+          time: process_time(item.start, date, channel_id),
           country: [],
           descr: nil,
           genre: [],
@@ -134,7 +138,7 @@ defmodule TvSchedule do
       end)
 
     %{
-      id: get_in(json, [:schedule, Access.at(0), :channel, :id]),
+      id: channel_id,
       name: get_in(json, [:schedule, Access.at(0), :channel, :name]),
       date: date,
       items: items
@@ -250,7 +254,7 @@ defmodule TvSchedule do
     end
   end
 
-  def run(date_str \\ :today, channel_list \\ [717, 1455, 1606, 1644, 1502]) do
+  def run(date_str \\ :today, channel_list \\ [717, 1455, 1606, 1494, 1644, 1502]) do
     TvSchedule.Options.start_link
 
     date = get_date(date_str)
