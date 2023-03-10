@@ -31,6 +31,17 @@ defmodule TvSchedule do
     end
   end
 
+  def get_url(url, sleep \\ true) do
+    if sleep do
+      Process.sleep :rand.uniform(10000)
+    end
+
+    %{status_code: 200, body: body} = HTTPoison.get! url
+
+    body
+  end
+
+
   def get_channel(channel_id, date, force \\ false) do
     file_id = "#{channel_id}.#{date}"
     data = load_cache(file_id, force)
@@ -41,7 +52,7 @@ defmodule TvSchedule do
       url = URI.merge(@host, "/ajax/channel/?channel_id=#{channel_id}&date=#{date}&region_id=#{@region_id}")
       Logger.debug "get_channel #{url}"
 
-      %{status_code: 200, body: body} = HTTPoison.get! url
+      body = get_url(url)
       save_cache(file_id, body)
 
       body
@@ -57,7 +68,7 @@ defmodule TvSchedule do
       url = URI.merge(@host, "/ajax/event/?id=#{item_id}&region_id=#{@region_id}")
       Logger.debug "get_item_details #{url}"
 
-      %{status_code: 200, body: body} = HTTPoison.get! url
+      body = get_url(url)
       save_cache(item_id, body)
 
       body
@@ -166,7 +177,7 @@ defmodule TvSchedule do
       |> filter_items(ignore_names: ignore_names, by_time: true, min_duration: 45)
       # |> Enum.map(fn item -> load_item(item) end)
       |> Enum.map(&Task.async(fn -> load_item(&1) end))
-      |> Enum.map(&Task.await/1)
+      |> Enum.map(&(Task.await(&1, 30_000)))
 
     %{channel | items: items}
   end
