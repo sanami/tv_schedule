@@ -24,7 +24,8 @@ defmodule ExTools.MixProject do
     [
       {:httpoison, "~> 2.0"},
       {:jason, "~> 1.2"},
-      {:html_entities, "~> 0.5"}
+      {:html_entities, "~> 0.5"},
+      {:floki, "~> 0.34.0"}
     ]
   end
 

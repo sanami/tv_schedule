@@ -100,7 +100,7 @@ defmodule TvSchedule do
     info
   end
 
-  def process_time(time_str, date, channel_id \\ nil) do
+  def process_time(time_str, date, channel_id \\ nil, night_time \\ true) do
     [hour, minute] = String.split(time_str, ":")
     {hour, _} = Integer.parse(hour)
     {minute, _} = Integer.parse(minute)
@@ -108,7 +108,7 @@ defmodule TvSchedule do
     time = Time.new!(hour, minute, 0)
     date_time = NaiveDateTime.new!(date, time)
 
-    date_time = if hour <= 4 do
+    date_time = if night_time && hour <= 4 do
       NaiveDateTime.add(date_time, 60*60*24, :second) #TODO :day
     else
       date_time
@@ -238,7 +238,12 @@ defmodule TvSchedule do
   end
 
   def channel_worker(channel_id, date, parent_pid) do
-    channel = channel_id |> get_channel(date) |> parse_channel |> load_channel
+    channel = case channel_id do
+      "jj" ->
+        channel_id |> TvSchedule.Parser.JJ.get_channel(date) |> TvSchedule.Parser.JJ.parse_channel(date) |> TvSchedule.Parser.JJ.load_channel
+      _ ->
+        channel_id |> get_channel(date) |> parse_channel |> load_channel
+    end
 
     send parent_pid, {:channel, channel_id, channel}
   end
@@ -265,7 +270,7 @@ defmodule TvSchedule do
     end
   end
 
-  def run(date_str \\ :today, channel_list \\ [717, 1455, 1606, 1494, 1644, 1502]) do
+  def run(date_str \\ :today, channel_list \\ [717, 1455, 1606, 1494, "jj", 1644, 1502]) do
     TvSchedule.Options.start_link
 
     date = get_date(date_str)

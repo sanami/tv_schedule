@@ -69,13 +69,15 @@ defmodule TvScheduleTest do
     assert res.minute == 30
 
     # night
-    res = process_time("03:30", date1)
-    assert res.hour == 3
+    res = process_time("03:30", date1, nil, true)
     IO.inspect NaiveDateTime.to_date(res) == Date.add(date1, 1)
+
+    res = process_time("03:30", date1, nil, false)
+    IO.inspect NaiveDateTime.to_date(res) == date1
 
     # shift
     res = process_time("18:30", date1, "717")
-    assert res.hour == 15
+    assert res.hour == 16
     assert res.minute == 30
   end
 
@@ -125,5 +127,8 @@ defmodule TvScheduleTest do
     assert Logger.level == :info
   end
 
-  test "run", do: TvSchedule.run(:today, [1644, 1502])
+  describe "run" do
+    test "mail.ru", do: TvSchedule.run(:today, [1644, 1502])
+    test "jj", do: TvSchedule.run(:today, ["jj"])
+  end
 end
