@@ -51,11 +51,9 @@ defmodule TvSchedule.Parser.JJ do
   end
 
   def load_channel(channel) do
-    ignore_names = TvSchedule.Options.get(:ignore_names)
-
     items =
       channel.items
-      |> TvSchedule.filter_items(ignore_names: ignore_names, by_time: true, min_duration: 45)
+      |> TvSchedule.filter_items(by_time: true, min_duration: 45)
 
     %{channel | items: items}
   end

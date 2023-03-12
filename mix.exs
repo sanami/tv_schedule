@@ -1,4 +1,4 @@
-defmodule ExTools.MixProject do
+defmodule TvSchedule.MixProject do
   use Mix.Project
 
   def project do

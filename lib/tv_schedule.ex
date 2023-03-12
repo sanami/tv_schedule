@@ -23,14 +23,6 @@ defmodule TvSchedule do
     end
   end
 
-  def load_ignore_names do
-    case File.read "config/tv_ignore.txt" do
-      {:ok, text} ->
-        text |> String.split("\n") |> Enum.map(&String.trim/1) |> Enum.filter(&(String.length(&1) > 0))
-      _ -> []
-    end
-  end
-
   def get_url(url, sleep \\ true) do
     if sleep do
       Process.sleep :rand.uniform(10000)
@@ -170,11 +162,9 @@ defmodule TvSchedule do
   end
 
   def load_channel(channel) do
-    ignore_names = TvSchedule.Options.get(:ignore_names)
-
     items =
       channel.items
-      |> filter_items(ignore_names: ignore_names, by_time: true, min_duration: 45)
+      |> filter_items(by_time: true, min_duration: 45)
       # |> Enum.map(fn item -> load_item(item) end)
       |> Enum.map(&Task.async(fn -> load_item(&1) end))
       |> Enum.map(&(Task.await(&1, 30_000)))
@@ -183,13 +173,12 @@ defmodule TvSchedule do
   end
 
   def filter_items(items, options \\ []) do
-   ignore_names = Keyword.get(options, :ignore_names) || []
    by_time = Keyword.get(options, :by_time)
    min_duration = Keyword.get(options, :min_duration) || 0
 
     Enum.filter(items, fn item ->
       (!by_time || ((item.time.hour in 15..23) || (item.time.hour in 0..2))) &&
-      item.duration >= min_duration && !(item.name in ignore_names)
+      item.duration >= min_duration && !TvSchedule.Settings.ignore?(item.name)
     end)
   end
 
@@ -271,7 +260,7 @@ defmodule TvSchedule do
   end
 
   def run(date_str \\ :today, channel_list \\ [717, 1455, 1606, 1494, "jj", 1644, 1502]) do
-    TvSchedule.Options.start_link
+    TvSchedule.Settings.start_link
 
     date = get_date(date_str)
     IO.puts "#{date}"

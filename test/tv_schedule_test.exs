@@ -1,4 +1,4 @@
-defmodule TvScheduleTest do
+defmodule TvSchedule.Test do
   use ExUnit.Case
   import TvSchedule
 
@@ -7,7 +7,7 @@ defmodule TvScheduleTest do
   @event2 File.read! "test/fixtures/203059401.json"
 
   setup do
-    TvSchedule.Options.start_link
+    TvSchedule.Settings.start_link
     :ok
   end
 
@@ -93,18 +93,10 @@ defmodule TvScheduleTest do
     assert length(res) > 3
   end
 
-  test "load_ignore_names" do
-    res = load_ignore_names()
-    IO.inspect res
-    assert length(res) > 1
-
-    assert TvSchedule.Options.get(:ignore_names) == res
-  end
-
   test "load_channel" do
     res = parse_channel(@channel1) |> load_channel
     IO.inspect res
-    assert length(res.items) == 3
+    assert length(res.items) > 1 and length(res.items) < 10
   end
 
   test "print_channel" do

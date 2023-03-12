@@ -1,4 +1,4 @@
-defmodule CliTest do
+defmodule TvSchedule.CLI.Test do
   use ExUnit.Case
 
   import TvSchedule.CLI
