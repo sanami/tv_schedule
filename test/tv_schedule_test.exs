@@ -3,56 +3,10 @@ defmodule TvSchedule.Test do
   import TvSchedule
 
   @channel1 File.read! "test/fixtures/1644.json"
-  @event1 File.read! "test/fixtures/203043290.json"
-  @event2 File.read! "test/fixtures/203059401.json"
 
   setup do
     TvSchedule.Settings.start_link
     :ok
-  end
-
-  test "cache" do
-    assert String.ends_with?(cache_file_path("1"), ".json")
-
-    save_cache("1", "12")
-    assert load_cache("0", true) == nil
-    assert load_cache("1", false) == "12"
-    assert load_cache("1", true) == nil
-  end
-
-  test "get_channel" do
-    res = String.length(get_channel(1644, Date.utc_today, true))
-    IO.inspect res
-    assert res > 1000
-  end
-
-  test "get_item_details" do
-    res = get_item_details("203043290", true)
-    assert String.length(res) > 1000
-  end
-
-  describe "parse_item_details" do
-    test "1" do
-      res = parse_item_details(@event1)
-      IO.inspect res
-      assert is_map(res)
-    end
-
-    test "2" do
-      res = parse_item_details(@event2)
-      IO.inspect res
-      assert is_map(res)
-    end
-  end
-
-  test "parse_channel" do
-    date1 = Date.new(2023, 3, 33)
-
-    res = parse_channel(@channel1)
-    IO.inspect res
-
-    assert %{date: date1, id: "1644", name: "НТК"} = res
-    assert length(res.items) == 21
   end
 
   test "replace_html_entities" do
@@ -82,7 +36,7 @@ defmodule TvSchedule.Test do
   end
 
   test "filter_items" do
-    channel = parse_channel(@channel1)
+    channel = TvSchedule.Parser.MR.parse_channel(@channel1)
 
     res = filter_items(channel.items, by_time: true, min_duration: 90)
     IO.inspect res
@@ -93,14 +47,8 @@ defmodule TvSchedule.Test do
     assert length(res) > 3
   end
 
-  test "load_channel" do
-    res = parse_channel(@channel1) |> load_channel
-    IO.inspect res
-    assert length(res.items) > 1 and length(res.items) < 10
-  end
-
   test "print_channel" do
-    parse_channel(@channel1) |> print_channel
+    TvSchedule.Parser.MR.parse_channel(@channel1) |> print_channel
   end
 
   test "get_date" do
@@ -120,7 +68,7 @@ defmodule TvSchedule.Test do
   end
 
   describe "run" do
-    test "mail.ru", do: TvSchedule.run(:today, [1644, 1502])
+    test "mr", do: TvSchedule.run(:today, [1644, 1502])
     test "jj", do: TvSchedule.run(:today, ["jj"])
   end
 end

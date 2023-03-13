@@ -6,7 +6,7 @@ defmodule TvSchedule.Parser.JJ do
     url = "https://jjtv.kz/ru/schedule?date=#{day_offset}"
     Logger.debug "get_channel #{url}"
 
-    %{status_code: 200, body: body} = HTTPoison.get! url
+    body = TvSchedule.get_url(url, false)
 
     body
   end
