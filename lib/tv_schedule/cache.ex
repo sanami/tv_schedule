@@ -13,6 +13,7 @@ defmodule TvSchedule.Cache do
 
   def load_cache(file_id, false) do
     case File.read(cache_file_path(file_id)) do
+      {:ok, ""} -> nil
       {:ok, data} -> data
       {:error, _} -> nil
     end

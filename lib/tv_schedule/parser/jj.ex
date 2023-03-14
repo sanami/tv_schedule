@@ -1,17 +1,39 @@
 defmodule TvSchedule.Parser.JJ do
   require Logger
 
-  def get_channel(_channel_id, date) do
-    day_offset = Date.day_of_week(date) - 1
-    url = "https://jjtv.kz/ru/schedule?date=#{day_offset}"
-    Logger.debug "get_channel #{url}"
+  def get_channel(_channel_id, date, force \\ false) do
+    file_id = "jj.#{date}"
+    data = TvSchedule.Cache.load_cache(file_id, force)
 
-    body = TvSchedule.get_url(url, false)
+    cond do
+      data ->
+        data
 
-    body
+      Date.beginning_of_week(Date.utc_today) <= date && date <= Date.end_of_week(Date.utc_today) ->
+        day_offset = Date.day_of_week(date) - 1
+        url = "https://jjtv.kz/ru/schedule?date=#{day_offset}"
+        Logger.debug "get_channel #{url}"
+
+        body = TvSchedule.get_url(url, false)
+        TvSchedule.Cache.save_cache(file_id, body)
+
+        body
+
+      true ->
+        nil
+    end
   end
 
-  def parse_channel(html, date \\ nil) do
+  def parse_channel(nil, date) do
+    %{
+      id: "jj",
+      name: "Jibek Joly",
+      date: date,
+      items: []
+    }
+  end
+
+  def parse_channel(html, date) do
     {:ok, doc} = Floki.parse_document(html)
 
     items =
@@ -36,7 +58,7 @@ defmodule TvSchedule.Parser.JJ do
         end)
       |> Enum.chunk_every(2,1)
       |> Enum.map(fn
-          [item] -> Map.put(item, :duration, 0)
+          [item] -> Map.put(item, :duration, 60)
           [item, next_item]->
             duration = NaiveDateTime.diff(next_item.time, item.time, :second) |> div(60) #TODO :minute
             Map.put(item, :duration, duration)
