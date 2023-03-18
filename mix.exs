@@ -25,7 +25,8 @@ defmodule TvSchedule.MixProject do
       {:httpoison, "~> 2.0"},
       {:jason, "~> 1.2"},
       {:html_entities, "~> 0.5"},
-      {:floki, "~> 0.34.0"}
+      {:floki, "~> 0.34.0"},
+      {:plug_cowboy, "~> 2.5"}
     ]
   end
 
