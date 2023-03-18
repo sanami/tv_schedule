@@ -3,7 +3,7 @@ defmodule TvSchedule.MixProject do
 
   def project do
     [
-      app: :ex_tools,
+      app: :tv_schedule,
       escript: escript_config(),
       version: "0.1.0",
       elixir: "~> 1.12",
