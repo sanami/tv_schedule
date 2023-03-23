@@ -1,4 +1,4 @@
-defmodule TvSchedule.Cache.Test do
+defmodule TvSchedule.CacheTest do
   use ExUnit.Case
 
   import TvSchedule.Cache

@@ -1,4 +1,4 @@
-defmodule TvSchedule.Test do
+defmodule TvScheduleTest do
   use ExUnit.Case
   import TvSchedule
 

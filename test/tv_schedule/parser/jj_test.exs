@@ -1,4 +1,4 @@
-defmodule TvSchedule.Parser.JJ.Test do
+defmodule TvSchedule.Parser.JJTest do
   use ExUnit.Case
   import TvSchedule.Parser.JJ
 
