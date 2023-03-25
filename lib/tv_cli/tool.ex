@@ -1,4 +1,4 @@
-defmodule TvSchedule.CLI do
+defmodule TvCLI.Tool do
   def main(argv) do
     argv
     |> parse_args
@@ -32,6 +32,6 @@ defmodule TvSchedule.CLI do
   end
 
   def process({:run, date_str}) do
-    TvSchedule.run(date_str)
+    TvSchedule.run(date_str, [1644, 1502])
   end
 end

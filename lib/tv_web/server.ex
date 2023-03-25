@@ -1,4 +1,4 @@
-defmodule TvSchedule.Web do
+defmodule TvWeb.Server do
   use Plug.Router
 
   plug Plug.Logger
@@ -24,10 +24,5 @@ defmodule TvSchedule.Web do
 
   match _ do
     send_resp(conn, 404, "oops")
-  end
-
-  def run do
-    webserver = {Plug.Cowboy, plug: TvSchedule.Web, scheme: :http, port: 3000}
-    {:ok, _} = Supervisor.start_link([webserver], strategy: :one_for_one)
   end
 end

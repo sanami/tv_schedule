@@ -1,7 +1,7 @@
-defmodule TvSchedule.CLITest do
+defmodule TvCLI.ToolTest do
   use ExUnit.Case
 
-  import TvSchedule.CLI
+  import TvCLI.Tool
 
   test "parse_args" do
     assert parse_args(["-h", "anything"]) == :help

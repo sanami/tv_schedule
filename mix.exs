@@ -16,7 +16,7 @@ defmodule TvSchedule.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {TvSchedule.Application, []}
+      mod: {TvWeb.Application, []}
     ]
   end
 
@@ -32,6 +32,6 @@ defmodule TvSchedule.MixProject do
   end
 
   defp escript_config do
-    [ main_module: TvSchedule.CLI ]
+    [ main_module: TvCLI.Tool ]
   end
 end
