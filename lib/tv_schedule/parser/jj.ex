@@ -1,4 +1,6 @@
 defmodule TvSchedule.Parser.JJ do
+  import TvSchedule.Helper
+
   require Logger
 
   def get_channel(_channel_id, date, force \\ false) do
@@ -41,7 +43,7 @@ defmodule TvSchedule.Parser.JJ do
       |> Floki.find("#tab-kaz .table-schedule__row")
       |> Enum.map(fn(tr_el) ->
           name = tr_el |> Floki.find(".table-schedule__name_js") |> Floki.text
-          time = tr_el |> Floki.find(".table-schedule__time") |> Floki.text |> TvSchedule.process_time(date, nil, false)
+          time = tr_el |> Floki.find(".table-schedule__time") |> Floki.text |> process_time(date, nil, false)
 
           %{
             id: nil,
@@ -75,7 +77,7 @@ defmodule TvSchedule.Parser.JJ do
   def load_channel(channel) do
     items =
       channel.items
-      |> TvSchedule.filter_items(by_time: true, min_duration: 45)
+      |> filter_items(by_time: true, min_duration: 45)
 
     %{channel | items: items}
   end

@@ -1,4 +1,6 @@
 defmodule TvSchedule.Parser.MR do
+  import TvSchedule.Helper
+
   require Logger
 
   @host URI.parse("https://tv.mail.ru")
@@ -44,7 +46,7 @@ defmodule TvSchedule.Parser.MR do
       #participants: json.tv_event.participants,
       country: (json.tv_event[:country] || []) |> Enum.map(&(&1.title)),
       name: json.tv_event.name,
-      descr: json.tv_event.descr |> TvSchedule.replace_html_entities,
+      descr: json.tv_event.descr |> replace_html_entities(),
       genre: (json.tv_event[:genre] || []) |> Enum.map(&(String.downcase(&1.title))),
       imdb_rating: json.tv_event |> get_in([:afisha_event, :imdb_rating]),
       name_eng: json.tv_event |> get_in([:afisha_event, :name_eng]),
@@ -67,7 +69,7 @@ defmodule TvSchedule.Parser.MR do
       item
       |> Map.take([:id, :name, :category_id])
       |> Map.merge(%{
-          time: TvSchedule.process_time(item.start, date, channel_id),
+          time: process_time(item.start, date, channel_id),
           country: [],
           descr: nil,
           genre: [],
@@ -108,7 +110,7 @@ defmodule TvSchedule.Parser.MR do
   def load_channel(channel) do
     items =
       channel.items
-      |> TvSchedule.filter_items(by_time: true, min_duration: 45)
+      |> filter_items(by_time: true, min_duration: 45)
       # |> Enum.map(fn item -> load_item(item) end)
       |> Enum.map(&Task.async(fn -> load_item(&1) end))
       |> Enum.map(&(Task.await(&1, 30_000)))
