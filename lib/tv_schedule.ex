@@ -44,7 +44,7 @@ defmodule TvSchedule do
       "jj" ->
         channel_id |> TvSchedule.Parser.JJ.get_channel(date) |> TvSchedule.Parser.JJ.parse_channel(date) |> TvSchedule.Parser.JJ.load_channel
       _ ->
-        channel_id |> TvSchedule.Parser.MR.get_channel(date) |> TvSchedule.Parser.MR.parse_channel |> TvSchedule.Parser.MR.load_channel
+        channel_id |> TvSchedule.Parser.MR.get_channel(date) |> TvSchedule.Parser.MR.parse_channel(date) |> TvSchedule.Parser.MR.load_channel
     end
 
     send parent_pid, {:channel, channel_id, channel}
@@ -72,7 +72,7 @@ defmodule TvSchedule do
     end
   end
 
-  def run(date_str \\ :today, channel_list \\ [717, 1455, 1606, 1494, "jj", 1644, 1502]) do
+  def run(date_str \\ :today, channel_list \\ [1644, 1502]) do
     TvSchedule.Settings.start_link
 
     date = get_date(date_str)

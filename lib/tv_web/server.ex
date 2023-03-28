@@ -13,8 +13,8 @@ defmodule TvWeb.Server do
 
   get "/:date" do
     data = ExUnit.CaptureIO.capture_io fn ->
-      # TvSchedule.run(date, [1644, 1502])
-      TvSchedule.run(date)
+      # TvSchedule.run(date)
+      TvSchedule.run(date, [717, 1455, 1606, 1494, "jj", 1644, 1502])
     end
 
     conn

@@ -1,5 +1,7 @@
 defmodule TvSchedule.Parser.JJTest do
   use ExUnit.Case
+  require Logger
+
   import TvSchedule.Parser.JJ
 
   @channel1 File.read!("test/fixtures/5.html")
@@ -7,12 +9,12 @@ defmodule TvSchedule.Parser.JJTest do
 
   describe "get_channel" do
     test "invalid" do
-      res = get_channel(nil, @date1)
+      res = get_channel("jj", @date1)
       assert res == nil
     end
 
     test "ok" do
-      res = get_channel(nil, Date.utc_today)
+      res = get_channel("jj", Date.utc_today)
       assert String.length(res) > 50000
     end
   end

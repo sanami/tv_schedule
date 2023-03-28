@@ -1,10 +1,8 @@
 import Config
 
 config :logger,
-  backends: [:console],
-  compile_time_purge_matching: [
-    [level_lower_than: :info]
-  ]
+ level: :debug,
+  backends: [:console]
 
 config :tv_schedule,
   key1: "value1",
@@ -14,4 +12,4 @@ config :tv_schedule,
 
 env_file = "#{config_env()}.exs"
 # IO.puts env_file
-if File.exists?(env_file), do: import_config(env_file)
+if File.exists?("config/#{env_file}"), do: import_config(env_file)

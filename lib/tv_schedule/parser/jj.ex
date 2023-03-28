@@ -1,9 +1,12 @@
 defmodule TvSchedule.Parser.JJ do
+  @behaviour TvSchedule.Parser.Base
+
   import TvSchedule.Helper
 
   require Logger
 
-  def get_channel(_channel_id, date, force \\ false) do
+  @impl true
+  def get_channel("jj", date, force \\ false) do
     file_id = "jj.#{date}"
     data = TvSchedule.Cache.load_cache(file_id, force)
 
@@ -11,7 +14,8 @@ defmodule TvSchedule.Parser.JJ do
       data ->
         data
 
-      Date.beginning_of_week(Date.utc_today) <= date && date <= Date.end_of_week(Date.utc_today) ->
+      #NOTE date1 < date2 invalid
+      date in Date.range(Date.beginning_of_week(Date.utc_today), Date.end_of_week(Date.utc_today)) ->
         day_offset = Date.day_of_week(date) - 1
         url = "https://jjtv.kz/ru/schedule?date=#{day_offset}"
         Logger.debug "get_channel #{url}"
@@ -26,6 +30,7 @@ defmodule TvSchedule.Parser.JJ do
     end
   end
 
+  @impl true
   def parse_channel(nil, date) do
     %{
       id: "jj",
@@ -35,6 +40,7 @@ defmodule TvSchedule.Parser.JJ do
     }
   end
 
+  @impl true
   def parse_channel(html, date) do
     {:ok, doc} = Floki.parse_document(html)
 
@@ -74,6 +80,7 @@ defmodule TvSchedule.Parser.JJ do
     }
   end
 
+  @impl true
   def load_channel(channel) do
     items =
       channel.items

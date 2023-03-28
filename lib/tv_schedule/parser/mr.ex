@@ -1,4 +1,6 @@
 defmodule TvSchedule.Parser.MR do
+  @behaviour TvSchedule.Parser.Base
+
   import TvSchedule.Helper
 
   require Logger
@@ -6,6 +8,7 @@ defmodule TvSchedule.Parser.MR do
   @host URI.parse("https://tv.mail.ru")
   @region_id 378
 
+  @impl true
   def get_channel(channel_id, date, force \\ false) do
     file_id = "#{channel_id}.#{date}"
     data = TvSchedule.Cache.load_cache(file_id, force)
@@ -56,7 +59,8 @@ defmodule TvSchedule.Parser.MR do
     info
   end
 
-  def parse_channel(json_str) do
+  @impl true
+  def parse_channel(json_str, _date) do
     json = Jason.decode!(json_str, keys: :atoms)
 
     channel_id = get_in(json, [:schedule, Access.at(0), :channel, :id])
@@ -107,6 +111,7 @@ defmodule TvSchedule.Parser.MR do
     Map.merge(item, item_details)
   end
 
+  @impl true
   def load_channel(channel) do
     items =
       channel.items
