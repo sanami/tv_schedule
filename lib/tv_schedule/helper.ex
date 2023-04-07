@@ -21,7 +21,7 @@ defmodule TvSchedule.Helper do
       date_time
     end
 
-    shift_min = if channel_id == "717", do: -120, else: 0
+    shift_min = if channel_id == "717", do: -150, else: 0
     NaiveDateTime.add(date_time, shift_min*60, :second) #TODO :minute
   end
 
