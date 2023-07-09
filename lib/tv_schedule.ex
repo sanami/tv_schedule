@@ -8,9 +8,15 @@ defmodule TvSchedule do
       Process.sleep :rand.uniform(5000)
     end
 
-    %{status_code: 200, body: body} = HTTPoison.get! url
-
-    body
+    try do
+      %{status_code: 200, body: body} = HTTPoison.get! url, timeout: 60_000
+      body
+    rescue
+      ex ->
+        Logger.error "!get_url #{url}"
+        Logger.error ex
+        ""
+    end
   end
 
   def print_channel(channel) do

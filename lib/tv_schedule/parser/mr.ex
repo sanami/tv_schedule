@@ -118,7 +118,7 @@ defmodule TvSchedule.Parser.MR do
       |> filter_items(by_time: true, min_duration: 45)
       # |> Enum.map(fn item -> load_item(item) end)
       |> Enum.map(&Task.async(fn -> load_item(&1) end))
-      |> Enum.map(&(Task.await(&1, 30_000)))
+      |> Enum.map(&(Task.await(&1, 60_000)))
 
     %{channel | items: items}
   end
